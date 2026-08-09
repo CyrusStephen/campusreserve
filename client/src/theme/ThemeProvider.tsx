@@ -6,7 +6,7 @@ import {
 import {
   ThemeContext,
   type Theme,
-} from '../theme/ThemeContext'
+} from './ThemeContext'
 
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem('campusreserve-theme')
