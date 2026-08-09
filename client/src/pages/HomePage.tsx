@@ -6,6 +6,7 @@ import {
   Projector,
 } from 'lucide-react'
 import { Link } from 'react-router'
+import ThemeToggle from '../components/ThemeToggle'
 
 const resourceTypes = [
   {
@@ -36,7 +37,7 @@ const resourceTypes = [
 
 function HomePage() {
   return (
-    <main className="min-h-screen bg-[#f7f6f3] px-5 py-8 text-[#191919] md:px-10">
+    <main className="min-h-screen bg-[#f7f6f3] px-5 py-8 text-[#191919] transition-colors dark:bg-[#191919] dark:text-[#f7f6f3] md:px-10">
       <nav className="mx-auto flex max-w-6xl items-center justify-between">
         <Link to="/" className="flex items-center gap-3 font-bold">
           <span className="grid size-10 place-items-center rounded-xl border-2 border-black bg-yellow-300">
@@ -46,12 +47,16 @@ function HomePage() {
           <span>CampusReserve</span>
         </Link>
 
-        <Link
-          to="/login"
-          className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white transition hover:bg-blue-700"
-        >
-          Sign in
-        </Link>
+        <div className="flex items-center gap-3">
+  <ThemeToggle />
+
+  <Link
+    to="/login"
+    className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white transition hover:bg-blue-700"
+  >
+    Sign in
+  </Link>
+</div>
       </nav>
 
       <section className="mx-auto max-w-6xl py-20 md:py-28">
@@ -67,7 +72,7 @@ function HomePage() {
             </span>
           </h1>
 
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-neutral-700">
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-neutral-700 dark:text-neutral-300">
             Find the right room, hall, laboratory or equipment and submit one
             clear request for approval.
           </p>
@@ -82,7 +87,7 @@ function HomePage() {
 
             <a
               href="#resources"
-              className="rounded-xl border-2 border-black px-6 py-3 font-semibold transition hover:bg-white"
+              className="rounded-xl border-2 border-black px-6 py-3 font-semibold transition hover:bg-white dark:border-white dark:hover:bg-neutral-800"
             >
               Explore resources
             </a>
@@ -97,7 +102,7 @@ function HomePage() {
         {resourceTypes.map(({ name, description, icon: Icon, color }) => (
           <article
             key={name}
-            className={`${color} rounded-2xl border-2 border-black p-5`}
+            className={`${color} rounded-2xl border-2 border-black p-5 text-[#191919] dark:border-white`}
           >
             <Icon size={28} strokeWidth={2.2} />
 
