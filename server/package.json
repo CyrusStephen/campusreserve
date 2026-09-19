@@ -9,21 +9,37 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "user:create": "tsx src/scripts/create-user.ts",
+    "resources:demo": "tsx src/scripts/seed-demo-resources.ts --confirm-demo",
+    "canteen:demo": "tsx src/scripts/seed-demo-canteen.ts",
+    "test": "node --test test/resource-media.test.ts",
+    "test:validation": "tsx --test test/resource-input.test.ts",
+    "test:canteen": "tsx --test test/canteen-input.test.ts"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "argon2": "^0.45.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
     "helmet": "^8.3.0",
+    "jose": "^6.2.10",
+    "pg": "^8.23.0",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.21.0",
+    "prisma": "^7.10.0",
     "tsx": "^4.23.11",
     "typescript": "^7.0.2"
   }

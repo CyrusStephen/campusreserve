@@ -1,0 +1,25 @@
+# Environment variables and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Dependencies
+**/node_modules/
+
+# Build and test output
+**/dist/
+**/coverage/
+*.log
+
+# Database backups
+*.backup
+
+# Generated Prisma client
+server/src/generated/
+
+# Editor settings
+.vscode/
+
+# Operating-system files
+.DS_Store
+Thumbs.db

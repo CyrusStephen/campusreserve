@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2024",
+    "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "rootDir": "./src",
     "outDir": "./dist",
-    "lib": ["ES2024"],
+    "lib": ["ES2022"],
     "types": ["node"],
     "strict": true,
     "noUncheckedIndexedAccess": true,

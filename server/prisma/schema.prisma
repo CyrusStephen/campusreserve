@@ -1,0 +1,433 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  FACULTY
+  STAFF
+  CANTEEN_STAFF
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum CanteenItemStatus {
+  AVAILABLE
+  SOLD_OUT
+  INACTIVE
+}
+
+enum CanteenOrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  REJECTED
+  CANCELLED
+}
+
+enum CanteenPaymentMethod {
+  UPI
+  CASH_ON_DELIVERY
+}
+
+enum CanteenPaymentStatus {
+  PENDING_VERIFICATION
+  PAY_ON_DELIVERY
+  PAID
+  VERIFICATION_FAILED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ResourceType {
+  ROOM
+  HALL
+  LABORATORY
+  EQUIPMENT
+}
+
+enum ResourceStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum ReservationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_CHANGES
+  CANCELLED
+  EXPIRED
+  COMPLETED
+}
+
+enum OccurrenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  EXPIRED
+  COMPLETED
+}
+
+enum ResourceBlockType {
+  MAINTENANCE
+  COLLEGE_EVENT
+  HOLIDAY
+  EMERGENCY
+  OTHER
+}
+
+enum WaitlistStatus {
+  ACTIVE
+  CLAIMED
+  EXPIRED
+  CANCELLED
+  FULFILLED
+}
+
+enum EmailDeliveryStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+model Department {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique @db.VarChar(20)
+  name      String   @unique @db.VarChar(120)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  users        User[]
+  reservations Reservation[]
+
+  @@index([isActive])
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String     @db.VarChar(120)
+  email        String     @unique @db.VarChar(255)
+  passwordHash String     @db.VarChar(255)
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  departmentId String?    @db.Uuid
+  lastLoginAt  DateTime?  @db.Timestamptz(3)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+
+  department            Department?             @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  requestedReservations Reservation[]           @relation("ReservationRequester")
+  reviewedReservations  Reservation[]           @relation("ReservationReviewer")
+  cancelledOccurrences  ReservationOccurrence[] @relation("OccurrenceCanceller")
+  createdResourceBlocks ResourceBlock[]         @relation("ResourceBlockCreator")
+  sessions              AuthSession[]
+  auditLogs             AuditLog[]
+  notifications         Notification[]
+  waitlistEntries       WaitlistEntry[]
+  canteenOrders         CanteenOrder[]          @relation("CanteenOrderRequester")
+  handledCanteenOrders  CanteenOrder[]          @relation("CanteenOrderHandler")
+
+  @@index([departmentId])
+  @@index([role, status])
+}
+
+model CanteenItem {
+  id          String            @id @default(uuid()) @db.Uuid
+  name        String            @db.VarChar(120)
+  description String            @db.Text
+  category    String            @db.VarChar(80)
+  pricePaise  Int
+  imageUrl    String?           @db.Text
+  options     String[]          @default([])
+  status      CanteenItemStatus @default(AVAILABLE)
+  sortOrder   Int               @default(0)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  orderItems CanteenOrderItem[]
+
+  @@index([status, category, sortOrder])
+}
+
+model CanteenOrder {
+  id                   String               @id @default(uuid()) @db.Uuid
+  referenceCode        String               @unique @db.VarChar(24)
+  requesterId          String               @db.Uuid
+  handlerId            String?              @db.Uuid
+  status               CanteenOrderStatus   @default(PENDING)
+  paymentMethod        CanteenPaymentMethod
+  paymentStatus        CanteenPaymentStatus
+  upiReference         String?              @db.VarChar(80)
+  paymentScreenshotUrl String?              @db.Text
+  deliveryLocation     String               @db.VarChar(220)
+  deliveryAt           DateTime             @db.Timestamptz(3)
+  notes                String?              @db.Text
+  rejectionReason      String?              @db.Text
+  totalPaise           Int
+  acceptedAt           DateTime?            @db.Timestamptz(3)
+  deliveredAt          DateTime?            @db.Timestamptz(3)
+  createdAt            DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime             @updatedAt @db.Timestamptz(3)
+
+  requester User               @relation("CanteenOrderRequester", fields: [requesterId], references: [id], onDelete: Restrict)
+  handler   User?              @relation("CanteenOrderHandler", fields: [handlerId], references: [id], onDelete: Restrict)
+  items     CanteenOrderItem[]
+
+  @@index([requesterId, createdAt])
+  @@index([status, deliveryAt])
+  @@index([handlerId, status])
+}
+
+model CanteenOrderItem {
+  id             String  @id @default(uuid()) @db.Uuid
+  orderId        String  @db.Uuid
+  itemId         String  @db.Uuid
+  itemName       String  @db.VarChar(120)
+  unitPricePaise Int
+  quantity       Int
+  customization  String? @db.VarChar(160)
+  lineTotalPaise Int
+
+  order CanteenOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item  CanteenItem  @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([itemId])
+}
+
+model AuthSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String    @unique @db.VarChar(255)
+  expiresAt        DateTime  @db.Timestamptz(3)
+  lastUsedAt       DateTime? @db.Timestamptz(3)
+  revokedAt        DateTime? @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Resource {
+  id          String         @id @default(uuid()) @db.Uuid
+  name        String         @db.VarChar(150)
+  slug        String         @unique @db.VarChar(180)
+  type        ResourceType
+  status      ResourceStatus @default(ACTIVE)
+  description String         @db.Text
+  building    String         @db.VarChar(120)
+  location    String         @db.VarChar(180)
+  tourUrl     String?        @db.Text
+  isDemo      Boolean        @default(false)
+  revision    Int            @default(1)
+
+  capacity      Int?
+  totalQuantity Int      @default(1)
+  isExclusive   Boolean  @default(true)
+  features      String[] @default([])
+  instructions  String?  @db.Text
+
+  advanceBookingDays        Int @default(60)
+  minimumNoticeHours        Int @default(1)
+  maximumDurationMinutes    Int @default(480)
+  bufferBeforeMinutes       Int @default(0)
+  bufferAfterMinutes        Int @default(0)
+  cancellationDeadlineHours Int @default(24)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  images          ResourceImage[]
+  occurrences     ReservationOccurrence[]
+  blocks          ResourceBlock[]
+  waitlistEntries WaitlistEntry[]
+
+  @@index([type, status])
+  @@index([isDemo, status])
+  @@index([building])
+}
+
+model ResourceImage {
+  id         String   @id @default(uuid()) @db.Uuid
+  resourceId String   @db.Uuid
+  url        String   @db.Text
+  publicId   String?  @db.VarChar(255)
+  altText    String   @db.VarChar(255)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, sortOrder])
+}
+
+model Reservation {
+  id              String            @id @default(uuid()) @db.Uuid
+  referenceCode   String            @unique @db.VarChar(24)
+  requesterId     String            @db.Uuid
+  departmentId    String?           @db.Uuid
+  title           String            @db.VarChar(180)
+  purpose         String            @db.Text
+  expectedPeople  Int?
+  notes           String?           @db.Text
+  assignedToName  String            @db.VarChar(120)
+  assignedToEmail String            @db.VarChar(255)
+  assignedToPhone String            @db.VarChar(30)
+  recurrenceRule  Json?
+  status          ReservationStatus @default(DRAFT)
+
+  submittedAt    DateTime? @db.Timestamptz(3)
+  holdExpiresAt  DateTime? @db.Timestamptz(3)
+  reviewedAt     DateTime? @db.Timestamptz(3)
+  reviewedById   String?   @db.Uuid
+  decisionReason String?   @db.Text
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+
+  requester   User                    @relation("ReservationRequester", fields: [requesterId], references: [id], onDelete: Restrict)
+  department  Department?             @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  reviewedBy  User?                   @relation("ReservationReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  occurrences ReservationOccurrence[]
+
+  @@index([requesterId, status])
+  @@index([departmentId])
+  @@index([status, submittedAt])
+  @@index([status, holdExpiresAt])
+}
+
+model ReservationOccurrence {
+  id             String           @id @default(uuid()) @db.Uuid
+  reservationId  String           @db.Uuid
+  resourceId     String           @db.Uuid
+  sequenceNumber Int
+  startAt        DateTime         @db.Timestamptz(3)
+  endAt          DateTime         @db.Timestamptz(3)
+  blockedStartAt DateTime         @db.Timestamptz(3)
+  blockedEndAt   DateTime         @db.Timestamptz(3)
+  quantity       Int              @default(1)
+  isExclusive    Boolean          @default(true)
+  status         OccurrenceStatus @default(PENDING)
+
+  cancelledAt        DateTime? @db.Timestamptz(3)
+  cancelledById      String?   @db.Uuid
+  cancellationReason String?   @db.Text
+  createdAt          DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime  @updatedAt @db.Timestamptz(3)
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  cancelledBy User?       @relation("OccurrenceCanceller", fields: [cancelledById], references: [id], onDelete: Restrict)
+
+  @@unique([reservationId, sequenceNumber])
+  @@index([resourceId, startAt, endAt])
+  @@index([resourceId, status])
+  @@index([reservationId, status])
+}
+
+model WaitlistEntry {
+  id             String         @id @default(uuid()) @db.Uuid
+  requesterId    String         @db.Uuid
+  resourceId     String         @db.Uuid
+  startAt        DateTime       @db.Timestamptz(3)
+  endAt          DateTime       @db.Timestamptz(3)
+  quantity       Int            @default(1)
+  status         WaitlistStatus @default(ACTIVE)
+  notifiedAt     DateTime?      @db.Timestamptz(3)
+  claimExpiresAt DateTime?      @db.Timestamptz(3)
+  claimedAt      DateTime?      @db.Timestamptz(3)
+  createdAt      DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime       @updatedAt @db.Timestamptz(3)
+
+  requester User     @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  resource  Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, startAt, endAt, status])
+  @@index([requesterId, status, createdAt])
+}
+
+model EmailDelivery {
+  id            String              @id @default(uuid()) @db.Uuid
+  to            String              @db.VarChar(255)
+  subject       String              @db.VarChar(255)
+  textBody      String              @db.Text
+  htmlBody      String?             @db.Text
+  status        EmailDeliveryStatus @default(PENDING)
+  attempts      Int                 @default(0)
+  lastError     String?             @db.VarChar(500)
+  nextAttemptAt DateTime            @default(now()) @db.Timestamptz(3)
+  lockedAt      DateTime?           @db.Timestamptz(3)
+  sentAt        DateTime?           @db.Timestamptz(3)
+  createdAt     DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime            @updatedAt @db.Timestamptz(3)
+
+  @@index([status, nextAttemptAt])
+  @@index([createdAt])
+}
+
+model ResourceBlock {
+  id          String            @id @default(uuid()) @db.Uuid
+  resourceId  String            @db.Uuid
+  type        ResourceBlockType
+  reason      String            @db.Text
+  startAt     DateTime          @db.Timestamptz(3)
+  endAt       DateTime          @db.Timestamptz(3)
+  createdById String            @db.Uuid
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  resource  Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  createdBy User     @relation("ResourceBlockCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([resourceId, startAt, endAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  action     String   @db.VarChar(100)
+  entityType String   @db.VarChar(80)
+  entityId   String   @db.VarChar(100)
+  metadata   Json?
+  ipAddress  String?  @db.VarChar(45)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  type       String    @db.VarChar(60)
+  title      String    @db.VarChar(160)
+  message    String    @db.Text
+  entityType String?   @db.VarChar(80)
+  entityId   String?   @db.VarChar(100)
+  readAt     DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, createdAt])
+}
