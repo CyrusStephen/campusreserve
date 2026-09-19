@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { prisma } from '../config/prisma.js'
 import { hashPassword } from '../utils/password.js'
 
-const roles = ['FACULTY', 'STAFF', 'CANTEEN_STAFF', 'ADMIN', 'SUPER_ADMIN'] as const
+const roles = ['FACULTY', 'STAFF', 'CANTEEN_STAFF', 'SECURITY', 'ADMIN', 'SUPER_ADMIN'] as const
 type Role = (typeof roles)[number]
 
 const emailSchema = z.string().trim().toLowerCase().max(255).pipe(z.email())
@@ -84,7 +84,7 @@ async function collectInput() {
   const emailInput = await prompt.question('Email: ')
   const roleInput = (
     await prompt.question(
-      'Role [FACULTY, STAFF, CANTEEN_STAFF, ADMIN, SUPER_ADMIN] (ADMIN): ',
+      'Role [FACULTY, STAFF, CANTEEN_STAFF, SECURITY, ADMIN, SUPER_ADMIN] (ADMIN): ',
     )
   )
     .trim()

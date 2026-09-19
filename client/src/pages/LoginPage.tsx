@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarCheck, TicketCheck, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, CalendarCheck, ShieldCheck, TicketCheck, UtensilsCrossed } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth'
@@ -13,8 +13,8 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const service = new URLSearchParams(location.search).get('service')
-  const serviceDestination = service === 'canteen' ? '/app/canteen' : service === 'events' ? '/app/events' : '/app'
-  const serviceLabel = service === 'canteen' ? 'Canteen Orders' : service === 'events' ? 'Event Access' : 'Space Bookings'
+  const serviceDestination = service === 'canteen' ? '/app/canteen' : service === 'events' ? '/app/events' : service === 'security' ? '/app/security' : '/app'
+  const serviceLabel = service === 'canteen' ? 'Canteen Orders' : service === 'events' ? 'Event Access' : service === 'security' ? 'Security Desk' : 'Space Bookings'
 
   const requestedPath = (location.state as { from?: unknown } | null)?.from
   const requestedDestination =
@@ -39,6 +39,8 @@ function LoginPage() {
     if (auth.user?.role === 'CANTEEN_STAFF' && service === 'canteen') {
       return <Navigate to="/app/canteen/manage" replace />
     }
+    if (auth.user?.role === 'SECURITY' && service !== 'security') return <Navigate to={`/access-denied?service=${service ?? 'spaces'}`} replace />
+    if (auth.user?.role === 'SECURITY') return <Navigate to="/app/security" replace />
     return <Navigate to={destination} replace />
   }
 
@@ -48,8 +50,10 @@ function LoginPage() {
     setFormError(null)
 
     try {
-      await auth.login(email, password)
-      navigate(destination, { replace: true })
+      const loggedInUser = await auth.login(email, password)
+      if (loggedInUser.role === 'SECURITY') navigate(service === 'security' ? '/app/security' : `/access-denied?service=${service ?? 'spaces'}`, { replace: true })
+      else if (loggedInUser.role === 'CANTEEN_STAFF') navigate(service === 'canteen' ? '/app/canteen/manage' : `/access-denied?service=${service ?? 'spaces'}`, { replace: true })
+      else navigate(destination, { replace: true })
     } catch (error: unknown) {
       setFormError(error instanceof Error ? error.message : 'Sign in failed.')
     } finally {
@@ -74,7 +78,7 @@ function LoginPage() {
 
         <div className="rounded-3xl border-2 border-black bg-white p-7 shadow-[7px_7px_0_#191919] transition-colors dark:border-white dark:bg-neutral-900 dark:shadow-[7px_7px_0_#f7f6f3]">
           <span className="grid size-12 place-items-center rounded-xl border-2 border-black bg-yellow-300 text-[#191919]">
-            {service === 'canteen' ? <UtensilsCrossed size={24} /> : service === 'events' ? <TicketCheck size={24} /> : <CalendarCheck size={24} />}
+            {service === 'canteen' ? <UtensilsCrossed size={24} /> : service === 'events' ? <TicketCheck size={24} /> : service === 'security' ? <ShieldCheck size={24} /> : <CalendarCheck size={24} />}
           </span>
 
           <p className="mt-6 text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">{serviceLabel}</p>

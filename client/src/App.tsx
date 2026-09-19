@@ -19,6 +19,7 @@ import CanteenPage from './pages/CanteenPage'
 import CanteenManagementPage from './pages/CanteenManagementPage'
 import EventAccessPage from './pages/EventAccessPage'
 import AccessDeniedPage from './pages/AccessDeniedPage'
+import SecurityVerificationPage from './pages/SecurityVerificationPage'
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="canteen" element={<CanteenPage />} />
         <Route path="canteen/manage" element={<CanteenManagementPage />} />
         <Route path="events" element={<EventAccessPage />} />
+        <Route path="security" element={<SecurityVerificationPage />} />
         <Route path="manage/reports" element={<ReportsPage />} />
         <Route path="manage/bookings" element={<BookingQueuePage />} />
         <Route path="manage/bookings/history" element={<ApprovalHistoryPage />} />

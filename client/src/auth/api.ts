@@ -101,7 +101,7 @@ function readAuthSession(payload: unknown): AuthSession {
     !('email' in payload.data.user) ||
     typeof payload.data.user.email !== 'string' ||
     !('role' in payload.data.user) ||
-    !['FACULTY', 'STAFF', 'CANTEEN_STAFF', 'ADMIN', 'SUPER_ADMIN'].includes(
+    !['FACULTY', 'STAFF', 'CANTEEN_STAFF', 'SECURITY', 'ADMIN', 'SUPER_ADMIN'].includes(
       String(payload.data.user.role),
     ) ||
     !('departmentId' in payload.data.user) ||

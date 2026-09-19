@@ -69,6 +69,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const session = await loginRequest(email, password)
       setUser(session.user)
       setStatus('authenticated')
+      return session.user
     } catch (loginError: unknown) {
       const message = messageFrom(loginError)
       setError(message)

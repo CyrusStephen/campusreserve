@@ -16,6 +16,7 @@ import {
 } from "../canteen/api";
 import type { CanteenItem, CanteenOrder } from "../canteen/types";
 import "../canteen/canteen.css";
+import { playInterfaceSound } from "../utils/interface-sounds";
 
 type CartLine = { item: CanteenItem; quantity: number; customization?: string };
 const upiId = import.meta.env.VITE_CANTEEN_UPI_ID || "campusreserve.demo@upi";
@@ -104,6 +105,7 @@ export default function CanteenPage() {
       setOrders((current) => [order, ...current]);
       setCart({});
       setView("orders");
+      playInterfaceSound("success");
     } catch (failure) {
       setError(
         failure instanceof Error

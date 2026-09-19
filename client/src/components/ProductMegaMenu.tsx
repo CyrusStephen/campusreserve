@@ -10,6 +10,7 @@ import {
   ScanLine,
   TicketCheck,
   UtensilsCrossed,
+  X,
   type LucideIcon,
 } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
@@ -118,6 +119,10 @@ export default function ProductMegaMenu({ open, onOpenChange }: ProductMegaMenuP
   useEffect(() => {
     if (!open) return
 
+    const mobile = window.matchMedia('(max-width: 760px)').matches
+    const previousOverflow = document.documentElement.style.overflow
+    if (mobile) document.documentElement.style.overflow = 'hidden'
+
     const closeOnOutsidePress = (event: PointerEvent) => {
       if (!menu.current?.contains(event.target as Node)) {
         onOpenChange(false)
@@ -134,6 +139,7 @@ export default function ProductMegaMenu({ open, onOpenChange }: ProductMegaMenuP
     document.addEventListener('pointerdown', closeOnOutsidePress)
     document.addEventListener('keydown', closeOnEscape)
     return () => {
+      if (mobile) document.documentElement.style.overflow = previousOverflow
       document.removeEventListener('pointerdown', closeOnOutsidePress)
       document.removeEventListener('keydown', closeOnEscape)
     }
@@ -161,6 +167,17 @@ export default function ProductMegaMenu({ open, onOpenChange }: ProductMegaMenuP
       </button>
 
       {open && <section aria-label="CampusReserve products" className="cr-product-panel" id="cr-product-panel" role="dialog">
+        <button
+          aria-label="Close products"
+          className="cr-product-mobile-close"
+          onClick={() => {
+            onOpenChange(false)
+            setView('products')
+          }}
+          type="button"
+        >
+          <X aria-hidden="true" size={20} />
+        </button>
         <div className="cr-product-panel-content" key={view}>
           {view === 'products' ? <>
             <header className="cr-product-panel-heading">

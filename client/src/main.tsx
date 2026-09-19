@@ -5,15 +5,12 @@ import App from './App'
 import './index.css'
 import { AuthProvider } from './auth/AuthProvider'
 import { ThemeProvider } from './theme/ThemeProvider'
+import AppErrorBoundary from './components/AppErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
+      <AppErrorBoundary><BrowserRouter><AuthProvider><App /></AuthProvider></BrowserRouter></AppErrorBoundary>
     </ThemeProvider>
   </StrictMode>,
 )

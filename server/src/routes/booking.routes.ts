@@ -50,6 +50,58 @@ function reservationId(request: Request): string {
   return z.uuid().parse(request.params.id)
 }
 
+bookingRouter.get('/verify/:referenceCode', requireRoles('SECURITY', 'ADMIN', 'SUPER_ADMIN'), async (request, response) => {
+  const referenceCode = z.string().trim().min(6).max(24).regex(/^[A-Za-z0-9-]+$/).parse(request.params.referenceCode).toUpperCase()
+  const now = new Date()
+  const booking = await prisma.reservation.findUnique({
+    where: { referenceCode },
+    select: {
+      id: true,
+      referenceCode: true,
+      title: true,
+      status: true,
+      assignedToName: true,
+      occurrences: {
+        orderBy: { startAt: 'asc' },
+        select: { id: true, startAt: true, endAt: true, status: true, resource: { select: { name: true, building: true, location: true } } },
+      },
+    },
+  })
+
+  if (!booking) {
+    await prisma.auditLog.create({ data: { actorId: request.auth!.user.id, action: 'BOOKING_VERIFICATION_NOT_FOUND', entityType: 'BookingVerification', entityId: referenceCode } })
+    response.json({ status: 'ok', data: { outcome: 'NOT_FOUND', checkedAt: now } })
+    return
+  }
+
+  const approved = booking.occurrences.filter((occurrence) => occurrence.status === 'APPROVED')
+  const active = approved.find((occurrence) => occurrence.startAt <= now && occurrence.endAt >= now)
+  const future = approved.find((occurrence) => occurrence.startAt > now)
+  const selected = active ?? future ?? approved.at(-1) ?? booking.occurrences[0]
+  const outcome = booking.status === 'CANCELLED' || booking.occurrences.every((occurrence) => occurrence.status === 'CANCELLED')
+    ? 'CANCELLED'
+    : active ? 'VALID_NOW'
+      : future ? 'VALID_LATER'
+        : approved.length > 0 ? 'EXPIRED'
+          : 'NOT_APPROVED'
+
+  await prisma.auditLog.create({
+    data: { actorId: request.auth!.user.id, action: 'BOOKING_VERIFIED', entityType: 'Reservation', entityId: booking.id, metadata: { outcome, referenceCode } },
+  })
+  response.json({ status: 'ok', data: {
+    outcome,
+    checkedAt: now,
+    booking: {
+      referenceCode: booking.referenceCode,
+      title: booking.title,
+      responsiblePerson: booking.assignedToName,
+      resource: selected?.resource ?? null,
+      startAt: selected?.startAt ?? null,
+      endAt: selected?.endAt ?? null,
+    },
+  } })
+})
+
 bookingRouter.get('/availability', async (request, response) => {
   const input = availabilityQuerySchema.parse(request.query)
   const resource = await prisma.resource.findFirst({

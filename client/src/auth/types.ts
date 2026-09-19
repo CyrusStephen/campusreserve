@@ -1,4 +1,4 @@
-export type UserRole = 'FACULTY' | 'STAFF' | 'CANTEEN_STAFF' | 'ADMIN' | 'SUPER_ADMIN'
+export type UserRole = 'FACULTY' | 'STAFF' | 'CANTEEN_STAFF' | 'SECURITY' | 'ADMIN' | 'SUPER_ADMIN'
 
 export type AuthUser = {
   id: string

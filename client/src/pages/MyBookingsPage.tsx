@@ -1,10 +1,11 @@
 import { CalendarClock, CalendarDays, Printer, XCircle } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { cancelBooking, cancelOccurrence, listMyBookings, rescheduleOccurrence } from '../bookings/api'
 import BookingSchedule from '../bookings/BookingSchedule'
 import { bookingStatusLabels, type Booking, type BookingOccurrence } from '../bookings/types'
+import { playInterfaceSound } from '../utils/interface-sounds'
 
 type OccurrenceEditor = {
   bookingId: string
@@ -39,7 +40,13 @@ function canCancel(occurrence: BookingOccurrence, isAdministrator: boolean): boo
   return Date.now() <= deadline
 }
 
+function cancellationDeadlineMessage(occurrence: BookingOccurrence): string {
+  const hours = occurrence.resource.cancellationDeadlineHours
+  return `Online cancellation closes ${hours} ${hours === 1 ? 'hour' : 'hours'} before the booking begins. Please contact an administrator for assistance.`
+}
+
 export default function MyBookingsPage() {
+  const [searchParams] = useSearchParams()
   const { user } = useAuth()
   const [bookings, setBookings] = useState<Booking[] | null>(null)
   const [error, setError] = useState('')
@@ -60,6 +67,33 @@ export default function MyBookingsPage() {
     })
     return () => controller.abort()
   }, [retry])
+  useEffect(() => {
+    if (!bookings) return
+    const bookingId = searchParams.get('booking')
+    if (!bookingId) return
+    window.requestAnimationFrame(() => document.getElementById(`booking-${bookingId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  }, [bookings, searchParams])
+
+  useEffect(() => {
+    function closeDialog(event: KeyboardEvent) {
+      if (event.key !== 'Escape' || working) return
+      setCancelId(null); setEditor(null); setReason('')
+    }
+    window.addEventListener('keydown', closeDialog)
+    return () => window.removeEventListener('keydown', closeDialog)
+  }, [working])
+
+  useEffect(() => {
+    if (!cancelId && !editor) return
+    const previousOverflow = document.documentElement.style.overflow
+    const previousOverscroll = document.documentElement.style.overscrollBehavior
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.overscrollBehavior = 'none'
+    return () => {
+      document.documentElement.style.overflow = previousOverflow
+      document.documentElement.style.overscrollBehavior = previousOverscroll
+    }
+  }, [cancelId, editor])
 
   function replaceBooking(updated: Booking) {
     setBookings((current) => current?.map((booking) => booking.id === updated.id ? updated : booking) ?? null)
@@ -80,6 +114,7 @@ export default function MyBookingsPage() {
       setCancelId(null)
       setReason('')
       setMessage('The complete booking request was cancelled.')
+      playInterfaceSound('cancel')
     } catch (failure: unknown) {
       setError(failure instanceof Error ? failure.message : 'Cancellation failed.')
     } finally {
@@ -116,6 +151,7 @@ export default function MyBookingsPage() {
       setMessage(editor.mode === 'cancel'
         ? `Occurrence ${editor.sequenceNumber} was cancelled; the other dates stay unchanged.`
         : `Occurrence ${editor.sequenceNumber} was rescheduled and returned to the approval queue.`)
+      playInterfaceSound(editor.mode === 'cancel' ? 'cancel' : 'success')
       setEditor(null)
     } catch (failure: unknown) {
       setError(failure instanceof Error ? failure.message : 'The selected date could not be updated.')
@@ -140,26 +176,26 @@ export default function MyBookingsPage() {
     {bookings && bookings.length > 0 && <div className="cr-booking-list">{bookings.map((booking) => {
       const isAdministrator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN'
       const firstActiveOccurrence = booking.occurrences.find((occurrence) => occurrence.status === 'PENDING' || occurrence.status === 'APPROVED')
-      const canCancelAll = (booking.status === 'PENDING' || booking.status === 'APPROVED')
-        && firstActiveOccurrence !== undefined
-        && canCancel(firstActiveOccurrence, isAdministrator)
+      const hasCancellableStatus = (booking.status === 'PENDING' || booking.status === 'APPROVED') && firstActiveOccurrence !== undefined
+      const canCancelAll = hasCancellableStatus && booking.occurrences.filter((occurrence) => occurrence.status === 'PENDING' || occurrence.status === 'APPROVED').every((occurrence) => canCancel(occurrence, isAdministrator))
       const statusLabel = booking.status === 'APPROVED' && booking.occurrences.some((occurrence) => occurrence.status === 'REJECTED' || occurrence.status === 'CANCELLED') ? 'Partially approved' : bookingStatusLabels[booking.status]
-      const changeableOccurrences = booking.occurrences.filter(canChange)
-      return <article className="cr-panel cr-booking-card" key={booking.id}>
-        <div className="cr-booking-card-head"><div><span className={`cr-status cr-status-${booking.status.toLowerCase()}`}>{statusLabel}</span><h2>{booking.title}</h2><p className="cr-reference">{booking.referenceCode} · {booking.occurrences.length} {booking.occurrences.length === 1 ? 'date' : 'dates'}</p></div><div className="cr-inline">{booking.status !== 'DRAFT' && <button className="cr-button cr-button-small" type="button" onClick={() => printConfirmation(booking)}><Printer size={16} />Confirmation</button>}{canCancelAll && <button className="cr-button cr-button-small cr-danger" type="button" onClick={() => { setEditor(null); setCancelId(cancelId === booking.id ? null : booking.id); setReason('') }}><XCircle size={16} />{booking.occurrences.length > 1 ? 'Cancel all dates' : 'Cancel request'}</button>}</div></div>
+      const changeableOccurrences = booking.occurrences.filter((occurrence) => ['PENDING', 'APPROVED', 'REJECTED'].includes(occurrence.status) && new Date(occurrence.startAt) > new Date())
+      return <article className={`cr-panel cr-booking-card${searchParams.get('booking') === booking.id ? ' cr-booking-card-focused' : ''}`} id={`booking-${booking.id}`} key={booking.id}>
+        <div className="cr-booking-card-head"><div><span className={`cr-status cr-status-${booking.status.toLowerCase()}`}>{statusLabel}</span><h2>{booking.title}</h2><p className="cr-reference">{booking.referenceCode} · {booking.occurrences.length} {booking.occurrences.length === 1 ? 'date' : 'dates'}</p></div><div className="cr-inline">{booking.status !== 'DRAFT' && <button className="cr-button cr-button-small" type="button" onClick={() => printConfirmation(booking)}><Printer size={16} />Confirmation</button>}{hasCancellableStatus && <button className="cr-button cr-button-small cr-danger" type="button" disabled={!canCancelAll} aria-describedby={!canCancelAll ? `cancel-help-${booking.id}` : undefined} onClick={() => { setEditor(null); setCancelId(booking.id); setReason('') }}><XCircle size={16} />{booking.occurrences.length > 1 ? 'Cancel all dates' : 'Cancel request'}</button>}</div></div>
+        {hasCancellableStatus && !canCancelAll && firstActiveOccurrence && <p className="cr-deadline-note" id={`cancel-help-${booking.id}`}>{cancellationDeadlineMessage(firstActiveOccurrence)}</p>}
         <BookingSchedule occurrences={booking.occurrences} />
         <div className="cr-booking-facts cr-assigned-facts"><div><strong>Assigned to</strong><span>{booking.assignedToName}</span></div><div><strong>Email</strong><span>{booking.assignedToEmail}</span></div><div><strong>Phone</strong><span>{booking.assignedToPhone}</span></div></div>
-        {changeableOccurrences.length > 0 && <div className="cr-occurrence-tools"><strong>Manage individual dates</strong><div>{changeableOccurrences.map((occurrence) => <div key={occurrence.id}><span>Occurrence {occurrence.sequenceNumber}</span><div className="cr-inline"><button className="cr-button cr-button-small" type="button" onClick={() => openEditor(booking, occurrence, 'reschedule')}><CalendarClock size={15} />Reschedule</button>{booking.occurrences.length > 1 && canCancel(occurrence, isAdministrator) && <button className="cr-button cr-button-small cr-danger" type="button" onClick={() => openEditor(booking, occurrence, 'cancel')}><XCircle size={15} />Cancel this date</button>}</div></div>)}</div></div>}
-        {editor?.bookingId === booking.id && <form className="cr-occurrence-form" onSubmit={(event) => void updateOccurrence(event)}>
-          <h3>{editor.mode === 'cancel' ? 'Cancel' : 'Reschedule'} occurrence {editor.sequenceNumber}</h3>
+        {changeableOccurrences.length > 0 && <div className="cr-occurrence-tools"><strong>Manage individual dates</strong><div>{changeableOccurrences.map((occurrence) => { const occurrenceCanCancel = canCancel(occurrence, isAdministrator); return <div key={occurrence.id}><span>Occurrence {occurrence.sequenceNumber}</span><div className="cr-inline"><button className="cr-button cr-button-small" type="button" disabled={!canChange(occurrence)} onClick={() => openEditor(booking, occurrence, 'reschedule')}><CalendarClock size={15} />Reschedule</button>{booking.occurrences.length > 1 && occurrence.status !== 'REJECTED' && <button className="cr-button cr-button-small cr-danger" type="button" disabled={!occurrenceCanCancel} title={!occurrenceCanCancel ? cancellationDeadlineMessage(occurrence) : undefined} onClick={() => openEditor(booking, occurrence, 'cancel')}><XCircle size={15} />Cancel this date</button>}</div>{!occurrenceCanCancel && occurrence.status !== 'REJECTED' && <small className="cr-deadline-inline">{cancellationDeadlineMessage(occurrence)}</small>}</div> })}</div></div>}
+        {editor?.bookingId === booking.id && <div className="cr-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !working) setEditor(null) }}><form className="cr-modal-card cr-occurrence-form" role="dialog" aria-modal="true" aria-labelledby="occurrence-dialog-title" onSubmit={(event) => void updateOccurrence(event)}>
+          <h3 id="occurrence-dialog-title">{editor.mode === 'cancel' ? 'Cancel' : 'Reschedule'} occurrence {editor.sequenceNumber}</h3>
           {editor.mode === 'reschedule' && <div className="cr-form-grid"><label className="cr-field">New start<input type="datetime-local" required value={editor.startAt} onChange={(event) => setEditor((current) => current ? { ...current, startAt: event.target.value } : null)} /></label><label className="cr-field">New end<input type="datetime-local" required value={editor.endAt} onChange={(event) => setEditor((current) => current ? { ...current, endAt: event.target.value } : null)} /></label></div>}
           <label className="cr-field">Reason<input required minLength={3} maxLength={2000} value={editor.reason} onChange={(event) => setEditor((current) => current ? { ...current, reason: event.target.value } : null)} placeholder={editor.mode === 'cancel' ? 'Why is this date no longer needed?' : 'Why does this date need to change?'} /></label>
           {editor.mode === 'reschedule' && <p className="cr-help">The changed date becomes pending again. All other occurrence decisions stay unchanged.</p>}
           <div className="cr-inline"><button className={`cr-button ${editor.mode === 'cancel' ? 'cr-danger' : 'cr-button-primary'}`} disabled={working} type="submit">{working ? 'Saving…' : editor.mode === 'cancel' ? 'Cancel this date' : 'Save new date'}</button><button className="cr-button cr-button-quiet" type="button" onClick={() => setEditor(null)}>Keep unchanged</button></div>
-        </form>}
+        </form></div>}
         <p className="cr-preserve-lines">{booking.purpose}</p>
         {booking.decisionReason && <p className="cr-decision-note"><strong>Decision note:</strong> {booking.decisionReason}</p>}
-        {cancelId === booking.id && <form className="cr-cancel-form" onSubmit={(event) => void cancel(event, booking.id)}><p className="cr-help">Cancelling releases every pending or approved date in this request.</p><label className="cr-field">Reason for cancellation<input required minLength={3} maxLength={2000} value={reason} onChange={(event) => setReason(event.target.value)} /></label><div className="cr-inline"><button className="cr-button cr-danger" disabled={working} type="submit">{working ? 'Cancelling…' : 'Cancel complete request'}</button><button className="cr-button cr-button-quiet" type="button" onClick={() => setCancelId(null)}>Keep booking</button></div></form>}
+        {cancelId === booking.id && <div className="cr-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !working) setCancelId(null) }}><form className="cr-modal-card cr-cancel-form" role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title" onSubmit={(event) => void cancel(event, booking.id)}><h3 id="cancel-dialog-title">Cancel {booking.occurrences.length > 1 ? 'all booking dates' : 'this booking'}?</h3><p className="cr-help">Cancelling releases every pending or approved date in this request. This action cannot be undone.</p><label className="cr-field">Reason for cancellation<input autoFocus required minLength={3} maxLength={2000} value={reason} onChange={(event) => setReason(event.target.value)} /></label><div className="cr-inline"><button className="cr-button cr-danger" disabled={working} type="submit">{working ? 'Cancelling…' : 'Confirm cancellation'}</button><button className="cr-button cr-button-quiet" type="button" disabled={working} onClick={() => setCancelId(null)}>Keep booking</button></div></form></div>}
       </article>
     })}</div>}
   </section>

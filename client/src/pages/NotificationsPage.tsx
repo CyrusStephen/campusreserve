@@ -1,13 +1,17 @@
 import { Bell, CheckCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { listNotifications, markAllNotificationsRead, markNotificationRead } from '../notifications/api'
 import type { NotificationData } from '../notifications/types'
+import { useAuth } from '../auth/useAuth'
 
 function dateTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 }
 
 export default function NotificationsPage() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [data, setData] = useState<NotificationData | null>(null)
   const [workingId, setWorkingId] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -37,6 +41,21 @@ export default function NotificationsPage() {
     } finally { setWorkingId(null) }
   }
 
+  function destination(item: NotificationData['items'][number]): string | null {
+    if (item.type === 'WAITLIST_AVAILABLE') return `/app/waitlist${item.entityId ? `?entry=${encodeURIComponent(item.entityId)}` : ''}`
+    if (!item.entityId) return null
+    const administrator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN'
+    if (administrator && (item.type === 'BOOKING_SUBMITTED' || item.type === 'OCCURRENCE_RESCHEDULED')) return `/app/manage/bookings?booking=${encodeURIComponent(item.entityId)}`
+    return `/app/bookings?booking=${encodeURIComponent(item.entityId)}`
+  }
+
+  async function openNotification(item: NotificationData['items'][number]) {
+    const path = destination(item)
+    if (!path) return
+    if (!item.readAt) await markRead(item.id)
+    navigate(path)
+  }
+
   async function markAllRead() {
     setWorkingId('all'); setError('')
     try {
@@ -53,8 +72,8 @@ export default function NotificationsPage() {
     {error && <div className="cr-alert cr-alert-error" role="alert"><p>{error}</p><button className="cr-button" type="button" onClick={() => setRetry((value) => value + 1)}>Reload</button></div>}
     {!data && !error && <div className="cr-empty" role="status">Loading notifications…</div>}
     {data?.items.length === 0 && <div className="cr-empty"><Bell size={32} /><h2>No notifications yet.</h2><p>New booking activity will appear here.</p></div>}
-    {data && data.items.length > 0 && <div className="cr-notification-list">{data.items.map((item) => <article className={`cr-panel cr-notification${item.readAt ? '' : ' cr-notification-unread'}`} key={item.id}>
-      <div className="cr-notification-icon"><Bell size={18} /></div><div><div className="cr-notification-head"><h2>{item.title}</h2>{!item.readAt && <span>New</span>}</div><p>{item.message}</p><time dateTime={item.createdAt}>{dateTime(item.createdAt)}</time></div>{!item.readAt && <button className="cr-button cr-button-small" type="button" disabled={workingId === item.id} onClick={() => void markRead(item.id)}>Mark read</button>}
+    {data && data.items.length > 0 && <div className="cr-notification-list">{data.items.map((item) => <article className={`cr-panel cr-notification${item.readAt ? '' : ' cr-notification-unread'}${destination(item) ? ' cr-notification-actionable' : ''}`} key={item.id} onClick={() => void openNotification(item)} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && destination(item)) { event.preventDefault(); void openNotification(item) } }} role={destination(item) ? 'link' : undefined} tabIndex={destination(item) ? 0 : undefined}>
+      <div className="cr-notification-icon"><Bell size={18} /></div><div><div className="cr-notification-head"><h2>{item.title}</h2>{!item.readAt && <span>New</span>}</div><p>{item.message}</p><time dateTime={item.createdAt}>{dateTime(item.createdAt)}</time></div>{!item.readAt && <button className="cr-button cr-button-small" type="button" disabled={workingId === item.id} onClick={(event) => { event.stopPropagation(); void markRead(item.id) }}>Mark read</button>}
     </article>)}</div>}
   </section>
 }

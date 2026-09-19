@@ -6,6 +6,8 @@ import type { Resource } from '../resources/types'
 import { createBooking } from './api'
 import type { Booking } from './types'
 import { intervalTouchesWeekend } from './weekend'
+import { playInterfaceSound } from '../utils/interface-sounds'
+import { createClientId } from '../utils/client-id'
 
 interface DraftOccurrence { id: string; startAt: string; endAt: string }
 
@@ -23,7 +25,7 @@ function firstOccurrence(minimumNoticeHours: number): DraftOccurrence {
     start.setDate(start.getDate() + (start.getHours() >= 17 ? 1 : 0))
     start.setHours(10, 0, 0, 0)
   }
-  return { id: crypto.randomUUID(), startAt: localDateTime(start), endAt: localDateTime(new Date(start.getTime() + 60 * 60 * 1000)) }
+  return { id: createClientId(), startAt: localDateTime(start), endAt: localDateTime(new Date(start.getTime() + 60 * 60 * 1000)) }
 }
 
 export default function BookingForm({ resource, onCreated }: { resource: Resource; onCreated?: (booking: Booking) => void }) {
@@ -59,7 +61,7 @@ export default function BookingForm({ resource, onCreated }: { resource: Resourc
       const end = new Date(previous.endAt)
       start.setDate(start.getDate() + 7)
       end.setDate(end.getDate() + 7)
-      return [...current, { id: crypto.randomUUID(), startAt: localDateTime(start), endAt: localDateTime(end) }]
+      return [...current, { id: createClientId(), startAt: localDateTime(start), endAt: localDateTime(end) }]
     })
   }
 
@@ -88,6 +90,7 @@ export default function BookingForm({ resource, onCreated }: { resource: Resourc
         quantity: Number(quantity),
       })
       setCreated(booking)
+      playInterfaceSound('success')
       onCreated?.(booking)
     } catch (failure: unknown) {
       setError(failure instanceof Error ? failure.message : 'The booking request could not be submitted.')

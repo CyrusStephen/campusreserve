@@ -13,10 +13,10 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useApiHealth } from '../system/useApiHealth'
 import ProductMegaMenu from './ProductMegaMenu'
 
 type MenuName = 'how' | 'support' | null
-type HealthState = 'checking' | 'online' | 'offline'
 
 type InfoMenuProps = {
   label: string
@@ -89,31 +89,6 @@ function HowItWorksContent() {
       })}
     </ol>
   </div>
-}
-
-function useApiHealth(enabled: boolean) {
-  const [health, setHealth] = useState<HealthState>('checking')
-
-  useEffect(() => {
-    if (!enabled) return
-    const controller = new AbortController()
-    const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, '')
-    const apiBaseUrl = configuredApiUrl ?? (import.meta.env.DEV ? 'http://localhost:5000' : '')
-
-    setHealth('checking')
-    fetch(`${apiBaseUrl}/api/health`, { signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error('Health check failed')
-        setHealth('online')
-      })
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === 'AbortError')) setHealth('offline')
-      })
-
-    return () => controller.abort()
-  }, [enabled])
-
-  return health
 }
 
 type SupportItemProps = {

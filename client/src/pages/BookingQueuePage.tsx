@@ -5,8 +5,10 @@ import BookingSchedule from '../bookings/BookingSchedule'
 import type { Booking } from '../bookings/types'
 import { useAuth } from '../auth/useAuth'
 import { intervalTouchesWeekend } from '../bookings/weekend'
+import { useSearchParams } from 'react-router'
 
 export default function BookingQueuePage() {
+  const [searchParams] = useSearchParams()
   const { user } = useAuth()
   const [bookings, setBookings] = useState<Booking[] | null>(null)
   const [reasons, setReasons] = useState<Record<string, string>>({})
@@ -26,6 +28,13 @@ export default function BookingQueuePage() {
     })
     return () => controller.abort()
   }, [retry])
+
+  useEffect(() => {
+    if (!bookings) return
+    const bookingId = searchParams.get('booking')
+    if (!bookingId) return
+    window.requestAnimationFrame(() => document.getElementById(`approval-${bookingId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  }, [bookings, searchParams])
 
   async function decide(booking: Booking, decision: 'APPROVE' | 'REJECT') {
     const reason = reasons[booking.id]?.trim() || null
@@ -81,7 +90,7 @@ export default function BookingQueuePage() {
     {error && <div className="cr-alert cr-alert-error" role="alert"><p>{error}</p><button className="cr-button" type="button" onClick={() => setRetry((value) => value + 1)}>Reload</button></div>}
     {!bookings && !error && <div className="cr-empty" role="status">Loading approval queue…</div>}
     {bookings?.length === 0 && <div className="cr-empty"><CalendarCheck size={34} /><h2>All caught up.</h2><p>New faculty, staff and administrator requests will appear here.</p></div>}
-    {bookings && bookings.length > 0 && <div className="cr-booking-list">{bookings.map((booking) => { const ownRequest = booking.requester.id === user?.id; const hasWeekend = booking.occurrences.some((occurrence) => intervalTouchesWeekend(occurrence.startAt, occurrence.endAt)); return <article className="cr-panel cr-booking-card" key={booking.id}>
+    {bookings && bookings.length > 0 && <div className="cr-booking-list">{bookings.map((booking) => { const ownRequest = booking.requester.id === user?.id; const hasWeekend = booking.occurrences.some((occurrence) => intervalTouchesWeekend(occurrence.startAt, occurrence.endAt)); const focused = searchParams.get('booking') === booking.id; return <article className={`cr-panel cr-booking-card${focused ? ' cr-booking-card-focused' : ''}`} id={`approval-${booking.id}`} key={booking.id}>
       <div className="cr-booking-card-head"><div><span className="cr-status cr-status-pending">Awaiting approval</span><h2>{booking.title}</h2><p className="cr-reference">{booking.referenceCode} · Requested by {booking.requester.name} · {booking.occurrences.length} {booking.occurrences.length === 1 ? 'date' : 'dates'}</p></div></div>
       <BookingSchedule occurrences={booking.occurrences} />
       <div className="cr-booking-facts cr-assigned-facts"><div><strong>Assigned to</strong><span>{booking.assignedToName}</span></div><div><strong>Email</strong><span>{booking.assignedToEmail}</span></div><div><strong>Phone</strong><span>{booking.assignedToPhone}</span></div></div>

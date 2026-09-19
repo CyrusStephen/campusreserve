@@ -11,6 +11,7 @@ enum UserRole {
   FACULTY
   STAFF
   CANTEEN_STAFF
+  SECURITY
   ADMIN
   SUPER_ADMIN
 }

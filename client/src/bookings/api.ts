@@ -1,5 +1,5 @@
 import { apiBlobRequest, apiRequest } from '../auth/api'
-import type { AdminCalendarData, ApprovalHistoryEntry, Booking, BookingInput, DashboardData, ResourceAvailability, WaitlistData, WaitlistEntry } from './types'
+import type { AdminCalendarData, ApprovalHistoryEntry, Booking, BookingInput, BookingVerification, DashboardData, ResourceAvailability, WaitlistData, WaitlistEntry } from './types'
 
 interface ApiResult<T> { status: 'ok'; data: T }
 
@@ -33,6 +33,10 @@ export async function getResourceAvailability(resourceId: string, from: Date, to
 
 export async function getDashboard(signal?: AbortSignal): Promise<DashboardData> {
   return (await apiRequest<ApiResult<DashboardData>>('/bookings/dashboard', signal ? { signal } : {})).data
+}
+
+export async function verifyBooking(referenceCode: string): Promise<BookingVerification> {
+  return (await apiRequest<ApiResult<BookingVerification>>(`/bookings/verify/${encodeURIComponent(referenceCode.trim())}`)).data
 }
 
 export async function getAdminCalendar(from: Date, to: Date, resourceId?: string, signal?: AbortSignal): Promise<AdminCalendarData> {

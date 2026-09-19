@@ -104,6 +104,19 @@ export interface DashboardData {
   }
 }
 
+export type BookingVerification = {
+  outcome: 'VALID_NOW' | 'VALID_LATER' | 'EXPIRED' | 'NOT_APPROVED' | 'CANCELLED' | 'NOT_FOUND'
+  checkedAt: string
+  booking?: {
+    referenceCode: string
+    title: string
+    responsiblePerson: string
+    resource: { name: string; building: string; location: string } | null
+    startAt: string | null
+    endAt: string | null
+  }
+}
+
 export interface AdminCalendarResource {
   id: string
   name: string
