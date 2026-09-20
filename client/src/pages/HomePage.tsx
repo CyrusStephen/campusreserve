@@ -79,8 +79,9 @@ function HomePage() {
   return (
     <main className="cr-home min-h-screen bg-[#f7f6f3] px-5 pt-8 text-[#191919] transition-colors dark:bg-[#191919] dark:text-[#f7f6f3] md:px-10">
       <nav className="cr-home-nav mx-auto flex max-w-6xl items-center justify-between">
-        <Link to="/" className="cr-home-brand flex items-center gap-3 font-bold">
+        <Link to="/" className="cr-home-brand flex items-center gap-3 font-bold" aria-label="CampusReserve home">
           <BrandWordmark />
+          <span className="cr-home-mobile-wordmark" aria-hidden="true"><span>Campus</span><em>Reserve</em></span>
         </Link>
 
         <HomepageNavigation productOpen={productsOpen} onProductOpenChange={setProductsOpen} />

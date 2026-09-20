@@ -29,6 +29,9 @@
 
 .cr-home-brand { justify-self: start; }
 .cr-home-brand .cr-brand-wordmark { width: 184px; height: 32px; }
+.cr-home-mobile-wordmark { display: none; width: 184px; height: 32px; overflow: hidden; color: transparent; font-size: 0; white-space: nowrap; background: url('/branding/campusreserve-wordmark-dark.png') left center / contain no-repeat; }
+.cr-home-mobile-wordmark em { font-style: italic; }
+.dark .cr-home-mobile-wordmark { background-image: url('/branding/campusreserve-wordmark.png'); }
 .cr-home-nav-actions { justify-self: end; }
 
 .cr-home-nav-centre {
@@ -768,7 +771,8 @@
   .cr-home-brand { gap: 0; }
   .cr-home-nav { grid-template-columns: minmax(0, 1fr) auto auto; gap: .45rem; }
   .cr-home-brand { min-width: 0; overflow: hidden; }
-  .cr-home-brand .cr-brand-wordmark { width: min(150px, 100%); height: 28px; }
+  .cr-home-brand .cr-brand-wordmark { display: none; }
+  .cr-home-mobile-wordmark { display: block; flex: 0 0 184px; }
 
   .cr-home-nav-actions { gap: .45rem; }
   .cr-home-nav-actions .cr-home-button { padding-inline: .8rem; }
@@ -897,7 +901,7 @@
 }
 
 @media (max-width: 440px) {
-  .cr-home-brand .cr-brand-wordmark { width: min(126px, 100%); height: 24px; }
+  .cr-home-mobile-wordmark { width: 168px; height: 29px; flex-basis: 168px; }
   .cr-home-nav-actions { gap: .35rem; }
   .cr-home-nav-actions .cr-home-button { padding-inline: .65rem; }
   .cr-home-nav-mobile > .cr-product-trigger { padding-inline: .5rem; }
