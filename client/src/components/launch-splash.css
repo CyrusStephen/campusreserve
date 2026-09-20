@@ -1,0 +1,120 @@
+.cr-launch-splash {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #192477 url('/branding/campusreserve-splash-background.jpg') center / cover no-repeat;
+  color: #fff;
+  opacity: 1;
+  transition: opacity 620ms cubic-bezier(.4, 0, .2, 1), visibility 620ms;
+}
+
+.cr-launch-surface,
+.cr-launch-final {
+  position: absolute;
+  inset: 0;
+}
+
+.cr-launch-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: min(100vw, 100dvh, 820px);
+  aspect-ratio: 1;
+  border: 0;
+  object-fit: cover;
+  background: transparent;
+  transform: translate(-50%, -50%) scale(1.035);
+  opacity: 1;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 15%, #000 85%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  mask-composite: intersect;
+  transition: opacity 420ms ease;
+}
+
+.cr-launch-final {
+  opacity: 0;
+  transform: scale(.985);
+  transition: opacity 520ms ease, transform 720ms cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+
+.cr-launch-final-wordmark {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: min(78vw, 650px);
+  height: auto;
+  border-radius: 0;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+}
+
+.cr-launch-tenant {
+  position: absolute;
+  top: calc(48% + clamp(54px, 8vw, 78px));
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+  width: min(86vw, 560px);
+  transform: translateX(-50%);
+}
+
+.cr-launch-tenant > span {
+  color: rgba(255,255,255,.75);
+  font: italic 500 .82rem/1 Georgia, 'Times New Roman', serif;
+  letter-spacing: .1em;
+}
+
+.cr-launch-tenant > img {
+  display: block;
+  width: min(84vw, 520px);
+  max-height: clamp(54px, 10dvh, 88px);
+  object-fit: contain;
+  filter: drop-shadow(0 10px 24px rgba(5, 8, 42, .22));
+}
+
+.cr-launch-skip {
+  position: absolute;
+  z-index: 2;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: rgba(10,14,64,.26);
+  color: rgba(255,255,255,.84);
+  font: 650 .7rem/1 system-ui, sans-serif;
+  backdrop-filter: blur(10px);
+}
+
+.cr-launch-splash.is-holding .cr-launch-video { opacity: 0; }
+.cr-launch-splash.is-holding .cr-launch-final { opacity: 1; transform: scale(1); }
+.cr-launch-splash.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+
+@media (max-width: 560px) {
+  .cr-launch-video { width: min(128vw, 76dvh); }
+  .cr-launch-final-wordmark { top: 46%; width: 88vw; }
+  .cr-launch-tenant { top: calc(46% + 62px); width: 90vw; gap: 9px; }
+  .cr-launch-tenant > img { width: 88vw; max-height: 72px; }
+}
+
+@media (max-height: 620px) {
+  .cr-launch-final-wordmark { top: 43%; }
+  .cr-launch-tenant { top: calc(43% + 58px); }
+  .cr-launch-tenant > img { max-height: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-launch-video { transition-duration: .01ms !important; }
+}

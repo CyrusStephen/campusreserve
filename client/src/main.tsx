@@ -6,11 +6,12 @@ import './index.css'
 import { AuthProvider } from './auth/AuthProvider'
 import { ThemeProvider } from './theme/ThemeProvider'
 import AppErrorBoundary from './components/AppErrorBoundary'
+import LaunchSplash from './components/LaunchSplash'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <AppErrorBoundary><BrowserRouter><AuthProvider><App /></AuthProvider></BrowserRouter></AppErrorBoundary>
+      <AppErrorBoundary><LaunchSplash><BrowserRouter><AuthProvider><App /></AuthProvider></BrowserRouter></LaunchSplash></AppErrorBoundary>
     </ThemeProvider>
   </StrictMode>,
 )

@@ -1,6 +1,7 @@
-import { CalendarCheck, LifeBuoy, Mail, Server, TriangleAlert } from 'lucide-react'
+import { LifeBuoy, Mail, Server, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router'
 import { useApiHealth } from '../system/useApiHealth'
+import BrandWordmark from './BrandWordmark'
 import './app-footer.css'
 
 type AppFooterProps = {
@@ -42,8 +43,8 @@ export default function AppFooter({ compact = false }: AppFooterProps) {
     <div className="cr-footer-glass">
       <section className="cr-footer-intro" aria-labelledby="cr-footer-title">
         <Link className="cr-footer-brand" to="/">
-          <span><CalendarCheck aria-hidden="true" size={21} /></span>
-          <strong id="cr-footer-title">CampusReserve</strong>
+          <BrandWordmark className="cr-footer-wordmark" tone="light" />
+          <strong className="cr-sr-only" id="cr-footer-title">CampusReserve</strong>
         </Link>
         <p>One clear place to reserve spaces, order from the canteen and manage campus access.</p>
         <HealthStatus />

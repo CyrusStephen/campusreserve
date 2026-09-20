@@ -19,7 +19,7 @@
 }
 .cr-footer-intro { display: grid; justify-items: start; align-content: start; gap: 16px; }
 .cr-footer-brand { display: inline-flex; align-items: center; gap: 11px; font-size: 1.05rem; letter-spacing: -.025em; }
-.cr-footer-brand > span { display: grid; place-items: center; width: 39px; height: 39px; border: 1.5px solid #191919; border-radius: 11px; background: #fde16d; color: #191919; }
+.cr-footer-wordmark { width: 205px; height: 36px; }
 .cr-footer-intro p { max-width: 360px; margin: 0; color: #aaa; font-size: .84rem; line-height: 1.65; }
 .cr-footer-links { display: grid; align-content: start; gap: 10px; }
 .cr-footer-links > strong { margin-bottom: 7px; color: #fff; font-size: .76rem; letter-spacing: .04em; }

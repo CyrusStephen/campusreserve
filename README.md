@@ -1,25 +1,32 @@
-# CampusReserve mobile stability update
+# React + TypeScript + Vite
 
-This source-only patch fixes:
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-- cancellation and rescheduling modal positioning;
-- background scrolling while booking dialogs are open;
-- keyboard-safe modal sizing and action wrapping;
-- horizontal page escape and blank off-screen areas;
-- mobile drawer width, spacing and close control;
-- automatic drawer closing after navigation;
-- a full-width public footer.
+Currently, two official plugins are available:
 
-The intentional `Lab 2 · 2:30 PM` overlap has not been changed.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Apply
+## React Compiler
 
-Copy the included `client/src` directory into the root of the current CampusReserve project and merge/replace matching files. The Android project and environment files are not included.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-With Vite live reload running, the phone should update immediately.
+## Expanding the Oxlint configuration
 
-## Verification
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
 
-- `npm run lint` passed
-- `npm run build` passed
-- `npm test` passed — 10/10 tests
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.

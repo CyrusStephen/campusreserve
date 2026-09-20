@@ -1,6 +1,8 @@
-import { Activity, ArrowLeft, Bell, CalendarCheck, CalendarDays, CalendarRange, ClipboardList, Coffee, History, ListPlus, BarChart3, LayoutDashboard, LayoutGrid, LogOut, Menu, PanelLeftClose, PanelLeftOpen, Settings2, ShieldCheck, TicketCheck, UtensilsCrossed, Volume2, VolumeX, X } from 'lucide-react'
+import { Activity, ArrowLeft, Bell, CalendarCheck, CalendarRange, ClipboardList, Coffee, History, ListPlus, BarChart3, LayoutDashboard, LayoutGrid, LogOut, Menu, PanelLeftClose, PanelLeftOpen, Settings2, ShieldCheck, TicketCheck, Volume2, VolumeX, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
+import BrandLogo from './BrandLogo'
+import BrandWordmark from './BrandWordmark'
 import { useAuth } from '../auth/useAuth'
 import { getDashboard } from '../bookings/api'
 import type { DashboardData } from '../bookings/types'
@@ -30,7 +32,7 @@ export default function AppShell() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const administrator = auth.user?.role === 'ADMIN' || auth.user?.role === 'SUPER_ADMIN'; const canteenStaff = auth.user?.role === 'CANTEEN_STAFF' || administrator
   const area = productArea(location.pathname, location.search)
-  const meta = area === 'spaces' ? { label: 'Space Bookings', icon: <CalendarDays size={23} />, home: '/app' } : area === 'canteen' ? { label: 'Canteen Orders', icon: <UtensilsCrossed size={23} />, home: canteenStaff && auth.user?.role === 'CANTEEN_STAFF' ? '/app/canteen/manage' : '/app/canteen' } : area === 'security' ? { label: 'Security Desk', icon: <ShieldCheck size={23} />, home: '/app/security' } : { label: 'Event Access', icon: <TicketCheck size={23} />, home: '/app/events' }
+  const meta = area === 'spaces' ? { label: 'Space Bookings', home: '/app' } : area === 'canteen' ? { label: 'Canteen Orders', home: canteenStaff && auth.user?.role === 'CANTEEN_STAFF' ? '/app/canteen/manage' : '/app/canteen' } : area === 'security' ? { label: 'Security Desk', home: '/app/security' } : { label: 'Event Access', home: '/app/events' }
   useEffect(() => {
     let active = true; const refresh = () => { void listNotifications().then((result) => { if (active) setUnreadCount(result.unreadCount) }).catch(() => undefined) }
     refresh(); window.addEventListener(notificationChangedEvent, refresh); return () => { active = false; window.removeEventListener(notificationChangedEvent, refresh) }
@@ -82,7 +84,7 @@ export default function AppShell() {
     {(sidebarOpen && !sidebarPinned) && <button className="cr-sidebar-backdrop" type="button" aria-label="Close navigation" onClick={() => setSidebarOpen(false)} />}
     <aside className="cr-sidebar" aria-label="Primary navigation" onPointerEnter={openSidebar} onPointerLeave={scheduleSidebarClose} onFocus={openSidebar} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) scheduleSidebarClose() }}>
     <button className="cr-sidebar-close" type="button" aria-label="Close navigation" onClick={() => setSidebarOpen(false)}><X size={20} /></button>
-    <NavLink className="cr-brand" to={meta.home}><span>{meta.icon}</span>CampusReserve</NavLink><p className="cr-eyebrow">{meta.label}</p><Link className="cr-product-return" to="/"><ArrowLeft size={15} />All products</Link>
+    <NavLink className="cr-brand" to={meta.home}><BrandLogo decorative /><BrandWordmark /></NavLink><p className="cr-eyebrow">{meta.label}</p><Link className="cr-product-return" to="/"><ArrowLeft size={15} />All products</Link>
     <nav className="cr-navigation" aria-label={`${meta.label} workspace`} onClick={(event) => { if ((event.target as HTMLElement).closest('a')) setSidebarOpen(false) }}>
       {area === 'spaces' && <><NavLink end to="/app"><LayoutDashboard size={19} />Overview</NavLink><NavLink to="/app/resources"><LayoutGrid size={19} />Browse resources</NavLink><NavLink to="/app/bookings"><ClipboardList size={19} />My bookings</NavLink><NavLink to="/app/waitlist"><ListPlus size={19} />My waitlist</NavLink>{administrator && <NavLink end to="/app/manage/bookings"><CalendarCheck size={19} />Approvals</NavLink>}{administrator && <NavLink to="/app/manage/calendar"><CalendarRange size={19} />Master calendar</NavLink>}{administrator && <NavLink to="/app/manage/bookings/history"><History size={19} />History</NavLink>}{administrator && <NavLink to="/app/manage/reports"><BarChart3 size={19} />Reports</NavLink>}{administrator && <NavLink to="/app/manage/resources"><Settings2 size={19} />Manage resources</NavLink>}</>}
       {area === 'canteen' && <>{auth.user?.role !== 'CANTEEN_STAFF' && <NavLink end to="/app/canteen"><Coffee size={19} />Order from canteen</NavLink>}{canteenStaff && <NavLink to="/app/canteen/manage"><Settings2 size={19} />Canteen console</NavLink>}</>}

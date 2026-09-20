@@ -21,7 +21,8 @@
 .cr-app svg { flex-shrink: 0; }
 .cr-sidebar { padding: 28px 18px 24px; background: var(--cr-surface); border-right: 1px solid var(--cr-border); position: relative; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; min-width: 0; scrollbar-gutter: stable; }
 .cr-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.035em; font-size: 1.12rem; }
-.cr-brand > span { display: grid; place-items: center; width: 39px; height: 39px; background: var(--cr-accent); color: var(--cr-accent-ink); border: 1.5px solid #242422; border-radius: 11px; }
+.cr-brand > .cr-brand-logo { width: 43px; height: 43px; flex: 0 0 43px; border: 1px solid rgba(36, 36, 34, .28); border-radius: 11px; box-shadow: 0 5px 13px rgba(29, 52, 154, .12); }
+.cr-brand > .cr-brand-wordmark { width: 135px; height: 28px; }
 .cr-eyebrow { color: var(--cr-muted); font-size: .73rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
 .cr-navigation { display: grid; gap: 7px; }
 .cr-navigation a { display: flex; gap: 10px; align-items: center; padding: 11px 10px; border-radius: 10px; font-size: .88rem; font-weight: 600; }

@@ -11,6 +11,40 @@ body {
   min-width: 320px;
 }
 
+.cr-brand-logo {
+  display: block;
+  max-width: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.cr-brand-wordmark {
+  position: relative;
+  display: block;
+  width: 168px;
+  max-width: 100%;
+  height: 30px;
+  user-select: none;
+}
+
+.cr-brand-wordmark > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 180ms ease;
+}
+
+.cr-brand-wordmark-light-ink { opacity: 0; }
+.cr-brand-wordmark-light .cr-brand-wordmark-dark-ink,
+.dark .cr-brand-wordmark-auto .cr-brand-wordmark-dark-ink { opacity: 0; }
+.cr-brand-wordmark-light .cr-brand-wordmark-light-ink,
+.dark .cr-brand-wordmark-auto .cr-brand-wordmark-light-ink { opacity: 1; }
+.cr-brand-wordmark-dark .cr-brand-wordmark-dark-ink { opacity: 1; }
+.cr-brand-wordmark-dark .cr-brand-wordmark-light-ink { opacity: 0; }
+
 button,
 a,
 input {

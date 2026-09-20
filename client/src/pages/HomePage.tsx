@@ -1,6 +1,8 @@
 import { Bell, CalendarCheck, Check, Coffee, MapPin, Play, ShieldCheck } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router'
+import BrandLogo from '../components/BrandLogo'
+import BrandWordmark from '../components/BrandWordmark'
 import HomepageNavigation from '../components/HomepageNavigation'
 import AppFooter from '../components/AppFooter'
 import ThemeToggle from '../components/ThemeToggle'
@@ -78,11 +80,7 @@ function HomePage() {
     <main className="cr-home min-h-screen bg-[#f7f6f3] px-5 pt-8 text-[#191919] transition-colors dark:bg-[#191919] dark:text-[#f7f6f3] md:px-10">
       <nav className="cr-home-nav mx-auto flex max-w-6xl items-center justify-between">
         <Link to="/" className="cr-home-brand flex items-center gap-3 font-bold">
-          <span className="cr-home-brand-mark grid size-10 place-items-center rounded-xl border-2 border-black bg-yellow-300">
-            <CalendarCheck size={21} strokeWidth={2.4} />
-          </span>
-
-          <span className="cr-home-brand-name">CampusReserve</span>
+          <BrandWordmark />
         </Link>
 
         <HomepageNavigation productOpen={productsOpen} onProductOpenChange={setProductsOpen} />
@@ -164,7 +162,7 @@ function HomePage() {
         </div>
         <div className="cr-home-app-preview" aria-label="CampusReserve workspace preview">
           <div className="cr-home-preview-sidebar">
-            <span className="cr-home-preview-logo"><CalendarCheck size={17} /></span>
+            <BrandLogo className="cr-home-preview-logo" decorative />
             <i className="cr-home-preview-line cr-home-preview-line-active" />
             <i className="cr-home-preview-line" />
             <i className="cr-home-preview-line" />
@@ -194,7 +192,7 @@ function HomePage() {
         </div>
         <div className="cr-home-video-frame">
           {productVideoUrl ? <video controls preload="metadata" playsInline aria-label="CampusReserve product video"><source src={productVideoUrl} /></video> : <div className="cr-home-video-placeholder" role="img" aria-label="CampusReserve product video preview">
-            <div className="cr-home-video-scene"><span className="cr-home-video-brand"><CalendarCheck size={20} />CampusReserve</span><strong>Everything your campus needs,<br />in one calm flow.</strong><span>Product film coming soon</span></div>
+            <div className="cr-home-video-scene"><BrandWordmark className="cr-home-video-brand" tone="light" decorative /><strong>Everything your campus needs,<br />in one calm flow.</strong><span>Product film coming soon</span></div>
             <span className="cr-home-video-play" aria-hidden="true"><Play size={30} fill="currentColor" /></span>
           </div>}
         </div>
