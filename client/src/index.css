@@ -37,6 +37,25 @@ body {
   transition: opacity 180ms ease;
 }
 
+.cr-brand-wordmark-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  color: #203a9b;
+  font: 400 1.08em/1 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.055em;
+  white-space: nowrap;
+  transition: opacity 120ms ease;
+}
+.cr-brand-wordmark-fallback em { font-style: italic; }
+.cr-brand-wordmark-dark-ready .cr-brand-wordmark-fallback { opacity: 0; }
+.dark .cr-brand-wordmark-auto .cr-brand-wordmark-fallback { color: #f2f0ea; opacity: 1; }
+.dark .cr-brand-wordmark-auto.cr-brand-wordmark-light-ready .cr-brand-wordmark-fallback,
+.cr-brand-wordmark-light.cr-brand-wordmark-light-ready .cr-brand-wordmark-fallback { opacity: 0; }
+.cr-brand-wordmark-light .cr-brand-wordmark-fallback { color: #f2f0ea; }
+.cr-brand-wordmark-dark .cr-brand-wordmark-fallback { color: #203a9b; }
+
 .cr-brand-wordmark-light-ink { opacity: 0; }
 .cr-brand-wordmark-light .cr-brand-wordmark-dark-ink,
 .dark .cr-brand-wordmark-auto .cr-brand-wordmark-dark-ink { opacity: 0; }

@@ -121,7 +121,7 @@ function HomePage() {
 
         <div className="cr-home-hero-copy max-w-4xl">
           <span className="cr-home-badge inline-flex rounded-full border-2 border-black bg-yellow-300 px-4 py-2 font-semibold">
-            Made for our campus
+            Made for your campus
           </span>
 
           <h1 className="cr-home-title mt-8 text-5xl font-bold leading-[1.08] tracking-[-0.04em] md:text-7xl">
@@ -170,7 +170,7 @@ function HomePage() {
           </div>
           <div className="cr-home-preview-workspace">
             <header><span>Space Bookings</span><span className="cr-home-preview-avatar">CS</span></header>
-            <div className="cr-home-preview-heading"><span><small>Good evening, Cyrus</small><strong>Your campus, clearly organised.</strong></span><button type="button" tabIndex={-1}>New booking</button></div>
+            <div className="cr-home-preview-heading"><span><small>Good evening, Dr. Cyrus</small><strong>Your campus, clearly organised.</strong></span><button type="button" tabIndex={-1}>New booking</button></div>
             <div className="cr-home-preview-stats">
               <article><small>Upcoming</small><strong>03</strong></article>
               <article><small>Awaiting approval</small><strong>01</strong></article>
@@ -184,7 +184,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="cr-home-video-section mx-auto max-w-6xl" aria-labelledby="cr-video-title">
+      <section className="cr-home-video-section mx-auto max-w-6xl" id="cr-video-section" aria-labelledby="cr-video-title">
         <div className="cr-home-preview-copy">
           <span className="cr-home-preview-kicker">See CampusReserve in action</span>
           <h2 id="cr-video-title">One clear flow for the whole campus.</h2>

@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { productBrand, tenantBrand } from '../branding/tenant'
-import BrandWordmark from './BrandWordmark'
 import './launch-splash.css'
 
 const SPLASH_SEEN_KEY = 'campusreserve:splash-seen'
@@ -13,17 +12,17 @@ export default function LaunchSplash({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!visible) return
-    const fallbackTimer = window.setTimeout(() => finishSplash(), 8_000)
+    const fallbackTimer = window.setTimeout(() => finishSplash(), 12_000)
     return () => window.clearTimeout(fallbackTimer)
   }, [visible])
 
   function finishSplash() {
     setHolding(true)
-    window.setTimeout(() => setLeaving(true), 1_050)
+    window.setTimeout(() => setLeaving(true), 3_000)
     window.setTimeout(() => {
       sessionStorage.setItem(SPLASH_SEEN_KEY, 'yes')
       setVisible(false)
-    }, 1_700)
+    }, 3_700)
   }
 
   function skipSplash() {
@@ -48,7 +47,6 @@ export default function LaunchSplash({ children }: { children: ReactNode }) {
           <source src={productBrand.splashVideoUrl} type="video/mp4" />
         </video>
         <div className="cr-launch-final" aria-hidden={!holding}>
-          <BrandWordmark className="cr-launch-final-wordmark" tone="light" decorative />
           <div className="cr-launch-tenant">
             <span>for</span>
             <img src={tenantBrand.logoUrl} alt={tenantBrand.name} />

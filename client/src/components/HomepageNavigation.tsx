@@ -72,7 +72,16 @@ const howSteps = [
   { icon: CheckCircle2, title: 'Follow every update', copy: 'See approvals, decisions and progress in one place.' },
 ]
 
-function HowItWorksContent() {
+function scrollToProductVideo() {
+  const videoSection = document.querySelector<HTMLElement>('#cr-video-section')
+  if (!videoSection) return
+  videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  videoSection.classList.remove('cr-home-video-section-highlight')
+  window.requestAnimationFrame(() => videoSection.classList.add('cr-home-video-section-highlight'))
+  window.setTimeout(() => videoSection.classList.remove('cr-home-video-section-highlight'), 1_800)
+}
+
+function HowItWorksContent({ onNavigate }: { onNavigate?: () => void }) {
   return <div className="cr-how-content">
     <header className="cr-nav-panel-heading">
       <p className="cr-product-kicker">Simple from start to finish</p>
@@ -88,6 +97,11 @@ function HowItWorksContent() {
         </li>
       })}
     </ol>
+    <button className="cr-how-video-link" type="button" onClick={() => { onNavigate?.(); scrollToProductVideo() }}>
+      <span className="cr-how-video-play" aria-hidden="true">▶</span>
+      Watch product video
+      <ArrowRight aria-hidden="true" size={16} />
+    </button>
   </div>
 }
 
@@ -137,7 +151,7 @@ function DesktopNavigation({ closeProduct }: { closeProduct: () => void }) {
 
   return <div className="cr-home-nav-desktop">
     <InfoMenu label="How it works" open={activeMenu === 'how'} onToggle={() => toggleInfo('how')}>
-      <HowItWorksContent />
+      <HowItWorksContent onNavigate={() => setActiveMenu(null)} />
     </InfoMenu>
     <InfoMenu label="Support" open={activeMenu === 'support'} onToggle={() => toggleInfo('support')} panelClassName="cr-support-panel">
       <SupportContent active={activeMenu === 'support'} />
@@ -189,7 +203,7 @@ function MobileNavigation({ openProduct }: { openProduct: () => void }) {
         <button onClick={() => setView('support')} type="button"><strong>Support</strong><span>Help, contact and live status</span><ArrowRight size={17} /></button>
       </div> : <>
         <button className="cr-mobile-back" onClick={() => setView('more')} type="button">← More</button>
-        {view === 'how' ? <HowItWorksContent /> : <SupportContent active={view === 'support'} />}
+        {view === 'how' ? <HowItWorksContent onNavigate={close} /> : <SupportContent active={view === 'support'} />}
       </>}
     </section>}
   </div>
