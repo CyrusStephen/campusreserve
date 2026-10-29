@@ -1,7 +1,7 @@
-import { CheckCircle2, Clock3, Search, ShieldCheck, ShieldX } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
-import { verifyBooking } from '../bookings/api'
-import type { BookingVerification } from '../bookings/types'
+import { CheckCircle2, Clock3, Search, ShieldCheck, ShieldX, X } from 'lucide-react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { bookingSuggestions, verifyBooking } from '../bookings/api'
+import type { BookingSuggestion, BookingVerification } from '../bookings/types'
 
 const outcomeCopy: Record<BookingVerification['outcome'], { title: string; message: string; tone: string }> = {
   VALID_NOW: { title: 'Valid now', message: 'This approved booking is currently inside its access window. The listed space may be opened.', tone: 'valid' },
@@ -18,22 +18,61 @@ function istDateTime(value: string): string {
 
 export default function SecurityVerificationPage() {
   const [referenceCode, setReferenceCode] = useState('')
+  const [selectedReference, setSelectedReference] = useState('')
   const [result, setResult] = useState<BookingVerification | null>(null)
   const [error, setError] = useState('')
   const [checking, setChecking] = useState(false)
+  const [suggestions, setSuggestions] = useState<BookingSuggestion[]>([])
+  const [loadingSuggestions, setLoadingSuggestions] = useState(true)
+  const [suggestionError, setSuggestionError] = useState(false)
 
-  async function submit(event: FormEvent) {
-    event.preventDefault(); setChecking(true); setError(''); setResult(null)
-    try { setResult(await verifyBooking(referenceCode)) }
+  useEffect(() => {
+    let active = true
+    const query = referenceCode.trim()
+    if (query && query.length < 3) {
+      return
+    }
+    const timer = window.setTimeout(() => {
+      bookingSuggestions(query)
+        .then((entries) => {
+          if (!active) return
+          setSuggestions(entries)
+          setSuggestionError(false)
+          setLoadingSuggestions(false)
+        })
+        .catch(() => {
+          if (!active) return
+          setSuggestionError(true)
+          setLoadingSuggestions(false)
+        })
+    }, query ? 180 : 0)
+    return () => { active = false; window.clearTimeout(timer) }
+  }, [referenceCode])
+
+  async function checkReference(code: string) {
+    setSelectedReference(code)
+    setChecking(true); setError(''); setResult(null)
+    try { setResult(await verifyBooking(code)) }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'The booking could not be checked. Confirm the connection and try again.') }
     finally { setChecking(false) }
   }
 
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    await checkReference(referenceCode)
+  }
+
   const copy = result ? outcomeCopy[result.outcome] : null
   return <section className="cr-page cr-security-page">
-    <header className="cr-page-heading"><div><p className="cr-eyebrow">Security desk</p><h1>Verify hall access</h1><p>Enter the booking reference shown on the requester’s confirmation.</p></div><ShieldCheck size={38} /></header>
-    <form className="cr-security-search" onSubmit={(event) => void submit(event)}><label className="cr-field">Booking reference<input autoFocus autoCapitalize="characters" autoComplete="off" required minLength={6} maxLength={24} value={referenceCode} onChange={(event) => setReferenceCode(event.target.value.toUpperCase())} placeholder="CR-20260919-ABC12345" /></label><button className="cr-button cr-button-primary" type="submit" disabled={checking}><Search size={19} />{checking ? 'Checking…' : 'Check booking'}</button></form>
+    <header className="cr-page-heading"><div><p className="cr-eyebrow">Security desk</p><h1>Verify hall access</h1><p>Tap an upcoming booking or enter a reference from the confirmation.</p></div><ShieldCheck size={38} /></header>
+    <form className="cr-security-search" onSubmit={(event) => void submit(event)}><label className="cr-field">Booking reference<div className="cr-security-input"><input autoFocus autoCapitalize="characters" autoComplete="off" required minLength={6} maxLength={24} value={referenceCode} onChange={(event) => { const value = event.target.value.toUpperCase(); setReferenceCode(value); setLoadingSuggestions(!value || value.length >= 3); if (value && value.length < 3) setSuggestions([]) }} placeholder="CR-20260919-ABC12345" />{referenceCode && <button type="button" aria-label="Clear booking search" onClick={() => { setReferenceCode(''); setLoadingSuggestions(true) }}><X size={17} /></button>}</div></label><button className="cr-button cr-button-primary" type="submit" disabled={checking}><Search size={19} />{checking ? 'Checking…' : 'Check booking'}</button></form>
+    {(result || error) && <div className="cr-security-result-actions"><strong>{selectedReference}</strong><button className="cr-button cr-button-small" type="button" onClick={() => { setResult(null); setError(''); setSelectedReference(''); document.getElementById('security-bookings')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}><X size={16} />Check another booking</button></div>}
     {error && <div className="cr-alert cr-alert-error" role="alert"><strong>Unable to verify.</strong> {error} Never treat an unverified or stale confirmation as valid; contact an administrator if access is urgent.</div>}
     {result && copy && <article className={`cr-verification-result cr-verification-${copy.tone}`} aria-live="polite"><div className="cr-verification-state">{result.outcome === 'VALID_NOW' ? <CheckCircle2 size={42} /> : result.outcome === 'VALID_LATER' ? <Clock3 size={42} /> : <ShieldX size={42} />}<div><p className="cr-eyebrow">Live verification result</p><h2>{copy.title}</h2><p>{copy.message}</p></div></div>{result.booking && <dl><div><dt>Reference</dt><dd>{result.booking.referenceCode}</dd></div><div><dt>Programme</dt><dd>{result.booking.title}</dd></div><div><dt>Responsible person</dt><dd>{result.booking.responsiblePerson}</dd></div><div><dt>Space</dt><dd>{result.booking.resource ? `${result.booking.resource.name} · ${result.booking.resource.building}, ${result.booking.resource.location}` : 'Not available'}</dd></div><div><dt>Approved access</dt><dd>{result.booking.startAt && result.booking.endAt ? `${istDateTime(result.booking.startAt)} – ${istDateTime(result.booking.endAt)}` : 'No approved access window'}</dd></div></dl>}<small>Checked live at {istDateTime(result.checkedAt)} IST · This lookup has been recorded.</small></article>}
+    <section className="cr-security-suggestions" id="security-bookings" aria-label="Nearby approved bookings">
+      <h2>{referenceCode.length >= 3 ? 'Matching bookings' : 'Upcoming approved bookings'}</h2>
+      <p>Bookings in the next seven days. Tap one to check its live status.</p>
+      {loadingSuggestions ? <p role="status">Loading bookings…</p> : suggestionError ? <p role="status">Could not load suggestions. You can still enter a full reference above.</p> : suggestions.length ? <ul>{suggestions.map((item) => <li key={item.referenceCode}><button type="button" disabled={checking} aria-current={selectedReference === item.referenceCode ? 'true' : undefined} onClick={() => void checkReference(item.referenceCode)}><strong>{item.referenceCode}</strong><span>{item.title} · {item.resourceName}</span><small>{istDateTime(item.startAt)}</small></button></li>)}</ul> : <p role="status">No matching approved bookings in this date range. You can still check a full reference above.</p>}
+    </section>
   </section>
 }

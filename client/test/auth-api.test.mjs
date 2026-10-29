@@ -44,6 +44,30 @@ test('login keeps the token in memory and authenticates the next request', async
   assert.equal(events.at(-1).user.role, 'ADMIN')
 })
 
+test('switching Security to Admin replaces the identity and access token', async (context) => {
+  let loginCount = 0
+  const api = await loadApi(context, async (url, init) => {
+    if (url.endsWith('/auth/login')) {
+      loginCount++
+      const payload = session(loginCount === 1 ? 'security-token' : 'admin-token')
+      payload.data.user.role = loginCount === 1 ? 'SECURITY' : 'ADMIN'
+      payload.data.user.id = loginCount === 1 ? 'security-user' : 'admin-user'
+      return Response.json(payload)
+    }
+    if (url.endsWith('/auth/logout')) return new Response(null, { status: 204 })
+    assert.equal(init.headers.get('Authorization'), 'Bearer admin-token')
+    return Response.json({ ok: true })
+  })
+  const identities = []
+  api.subscribeSession((value) => identities.push(value?.user.id ?? null))
+  await api.loginRequest('guard@example.invalid', 'local-test-only')
+  await api.logoutRequest()
+  const admin = await api.loginRequest('admin@example.invalid', 'local-test-only')
+  assert.equal(admin.user.role, 'ADMIN')
+  await api.apiRequest('/bookings/queue')
+  assert.deepEqual(identities, ['security-user', null, 'admin-user'])
+})
+
 test('simultaneous refreshes share one request', async (context) => {
   let calls = 0
   const api = await loadApi(context, async () => { calls++; return Response.json(session()) })

@@ -54,6 +54,7 @@ enum ResourceType {
   HALL
   LABORATORY
   EQUIPMENT
+  SPORTS_FACILITY
 }
 
 enum ResourceStatus {
@@ -124,6 +125,9 @@ model User {
   name         String     @db.VarChar(120)
   email        String     @unique @db.VarChar(255)
   passwordHash String     @db.VarChar(255)
+  phone        String?    @db.VarChar(30)
+  bio          String?    @db.VarChar(280)
+  avatarData   String?    @db.Text
   role         UserRole
   status       UserStatus @default(ACTIVE)
   departmentId String?    @db.Uuid

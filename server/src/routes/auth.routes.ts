@@ -7,6 +7,8 @@ import { env } from '../config/env.js'
 import { prisma } from '../config/prisma.js'
 import { requireAuth } from '../middleware/auth.js'
 import { hashPassword, verifyPassword } from '../utils/password.js'
+import { isAllowedClientOrigin } from '../utils/client-origin.js'
+import { inspectJpeg } from '../utils/resource-media.js'
 import {
   ACCESS_TOKEN_TTL_SECONDS,
   REFRESH_TOKEN_TTL_MS,
@@ -19,7 +21,6 @@ import {
 // Mount at /api/auth after express.json() and cookieParser().
 export const authRouter = Router()
 
-const trustedOrigin = new URL(env.CLIENT_ORIGIN).origin
 const refreshCookieName = 'campusreserve_refresh'
 
 // Derive a separate signing key without adding another .env value.
@@ -35,12 +36,12 @@ const refreshSigningKey = Buffer.from(
   ),
 )
 
-// Suitable for localhost and a same-site frontend/API deployment.
-// Revisit the cookie policy if production uses different sites.
+// Cross-site HTTPS hosting can opt into SameSite=None. Origin validation below
+// remains required for every cookie-based mutation.
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: env.NODE_ENV === 'production' || env.REFRESH_COOKIE_SAME_SITE === 'none',
+  sameSite: env.REFRESH_COOKIE_SAME_SITE,
   path: '/api/auth',
 }
 
@@ -173,7 +174,7 @@ authRouter.use((request, response, next) => {
   // CLI tests must also explicitly send the matching Origin header.
   if (
     !['GET', 'HEAD', 'OPTIONS'].includes(request.method) &&
-    request.get('origin') !== trustedOrigin
+    (!request.get('origin') || !isAllowedClientOrigin(request.get('origin')!))
   ) {
     response.status(403).json({
       status: 'error',
@@ -474,4 +475,50 @@ authRouter.get('/me', requireAuth, (request, response) => {
     status: 'ok',
     data: { user: request.auth.user },
   })
+})
+
+
+const profileSchema = z.strictObject({
+  name: z.string().trim().min(2).max(120),
+  phone: z.string().trim().max(30).nullable(),
+  bio: z.string().trim().max(280).nullable(),
+  avatarData: z.string().max(200_000).nullable(),
+})
+
+// Only the current session's account can be read or updated through these routes.
+authRouter.get('/profile', requireAuth, async (request, response) => {
+  const user = await prisma.user.findUnique({
+    where: { id: request.auth!.user.id },
+    select: { id: true, name: true, email: true, role: true, status: true, departmentId: true, phone: true, bio: true, avatarData: true },
+  })
+  if (!user) { response.status(404).json({ status: 'error', message: 'Account not found.' }); return }
+  response.json({ status: 'ok', data: { profile: user } })
+})
+
+authRouter.patch('/profile', requireAuth, sessionLimiter, async (request, response) => {
+  if (!request.is('application/json')) {
+    response.status(415).json({ status: 'error', message: 'Send profile details as application/json.' }); return
+  }
+  const input = profileSchema.safeParse(request.body)
+  if (!input.success) {
+    response.status(400).json({ status: 'error', message: 'Check your profile details and try again.' }); return
+  }
+  const { name, phone, bio, avatarData } = input.data
+  if (avatarData !== null) {
+    const prefix = 'data:image/jpeg;base64,'
+    if (!avatarData.startsWith(prefix) || !/^[A-Za-z0-9+/]+={0,2}$/.test(avatarData.slice(prefix.length))) {
+      response.status(400).json({ status: 'error', message: 'Choose a valid JPEG profile photo.' }); return
+    }
+    const bytes = Buffer.from(avatarData.slice(prefix.length), 'base64')
+    const dimensions = inspectJpeg(bytes)
+    if (!dimensions || dimensions.width > 512 || dimensions.height > 512 || bytes.length > 140_000) {
+      response.status(400).json({ status: 'error', message: 'Profile photos must be JPEG, at most 512 pixels and 140 KB.' }); return
+    }
+  }
+  const user = await prisma.user.update({
+    where: { id: request.auth!.user.id },
+    data: { name, phone: phone || null, bio: bio || null, avatarData },
+    select: { id: true, name: true, email: true, role: true, status: true, departmentId: true, phone: true, bio: true, avatarData: true },
+  })
+  response.json({ status: 'ok', data: { profile: user } })
 })

@@ -16,6 +16,23 @@ export default function LaunchSplash({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(fallbackTimer)
   }, [visible])
 
+  useEffect(() => {
+    if (!visible) return
+    const root = document.documentElement
+    const body = document.body
+    const rootOverflow = root.style.overflow
+    const rootOverscroll = root.style.overscrollBehavior
+    const bodyOverflow = body.style.overflow
+    root.style.overflow = 'hidden'
+    root.style.overscrollBehavior = 'none'
+    body.style.overflow = 'hidden'
+    return () => {
+      root.style.overflow = rootOverflow
+      root.style.overscrollBehavior = rootOverscroll
+      body.style.overflow = bodyOverflow
+    }
+  }, [visible])
+
   function finishSplash() {
     setHolding(true)
     window.setTimeout(() => setLeaving(true), 3_000)

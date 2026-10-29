@@ -15,4 +15,4 @@ export type AuthSession = {
   expiresIn: number
 }
 
-export type AuthStatus = 'checking' | 'authenticated' | 'anonymous'
+export type AuthStatus = 'checking' | 'authenticated' | 'anonymous' | 'unavailable'

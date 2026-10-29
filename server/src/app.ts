@@ -12,6 +12,7 @@ import { notificationRouter } from './routes/notification.routes.js'
 import { canteenRouter } from './routes/canteen.routes.js'
 import { handleApiError } from './middleware/error.js'
 import { sendCriticalSupportAlert } from './utils/email.js'
+import { isAllowedClientOrigin } from './utils/client-origin.js'
 
 export const app = express()
 
@@ -36,7 +37,14 @@ app.use(helmet())
 
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin(origin, callback) {
+      if (!origin || isAllowedClientOrigin(origin)) {
+        callback(null, true)
+        return
+      }
+
+      callback(null, false)
+    },
     credentials: true,
   }),
 )

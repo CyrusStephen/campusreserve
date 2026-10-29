@@ -1,14 +1,13 @@
 import { Router, type RequestHandler } from 'express'
 import { rateLimit } from 'express-rate-limit'
 import { z } from 'zod'
-import { env } from '../config/env.js'
 import { prisma } from '../config/prisma.js'
 import { requireAuth } from '../middleware/auth.js'
 import { HttpError } from '../utils/http-error.js'
+import { requireClientOrigin } from '../utils/client-origin.js'
 
 export const notificationRouter = Router()
 
-const trustedOrigin = new URL(env.CLIENT_ORIGIN).origin
 const writeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 120,
@@ -20,10 +19,7 @@ const noStore: RequestHandler = (_request, response, next) => {
   response.setHeader('Cache-Control', 'no-store')
   next()
 }
-const checkOrigin: RequestHandler = (request, _response, next) => {
-  if (request.get('origin') !== trustedOrigin) throw new HttpError(403, 'This request origin is not allowed.')
-  next()
-}
+const checkOrigin: RequestHandler = requireClientOrigin
 
 notificationRouter.use(noStore, requireAuth)
 

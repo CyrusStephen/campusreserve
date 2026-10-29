@@ -6,6 +6,7 @@ import type { Booking } from '../bookings/types'
 import { useAuth } from '../auth/useAuth'
 import { intervalTouchesWeekend } from '../bookings/weekend'
 import { useSearchParams } from 'react-router'
+import { playInterfaceSound } from '../utils/interface-sounds'
 
 export default function BookingQueuePage() {
   const [searchParams] = useSearchParams()
@@ -49,6 +50,7 @@ export default function BookingQueuePage() {
     setWorkingId(booking.id); setError(''); setMessage('')
     try {
       await decideBooking(booking.id, decision, reason)
+      playInterfaceSound(decision === 'APPROVE' ? 'success' : 'cancel')
       setBookings((current) => current?.filter((item) => item.id !== booking.id) ?? null)
       setReasons((current) => { const next = { ...current }; delete next[booking.id]; return next })
       setMessage(`${booking.referenceCode} was ${decision === 'APPROVE' ? 'approved' : 'rejected'}.`)
@@ -72,6 +74,7 @@ export default function BookingQueuePage() {
     setWorkingId(key); setError(''); setMessage('')
     try {
       const updated = await decideOccurrence(booking.id, occurrenceId, decision, reason)
+      playInterfaceSound(decision === 'APPROVE' ? 'success' : 'cancel')
       if (updated.status === 'PENDING') {
         setBookings((current) => current?.map((item) => item.id === booking.id ? updated : item) ?? null)
       } else {

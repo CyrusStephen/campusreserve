@@ -73,7 +73,8 @@ export const ResourceType = {
   ROOM: 'ROOM',
   HALL: 'HALL',
   LABORATORY: 'LABORATORY',
-  EQUIPMENT: 'EQUIPMENT'
+  EQUIPMENT: 'EQUIPMENT',
+  SPORTS_FACILITY: 'SPORTS_FACILITY'
 } as const
 
 export type ResourceType = (typeof ResourceType)[keyof typeof ResourceType]

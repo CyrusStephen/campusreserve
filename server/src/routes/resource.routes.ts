@@ -13,6 +13,7 @@ import { HttpError } from '../utils/http-error.js'
 import { canManageResources, canViewResource } from '../utils/resource-access.js'
 import { resourceBlockCreateSchema, resourceCreateSchema, resourceQuerySchema, resourceUpdateSchema } from '../utils/resource-input.js'
 import { inspectJpeg, MAX_PHOTOS, MAX_PHOTO_BYTES, photoFilenamePattern } from '../utils/resource-media.js'
+import { requireClientOrigin } from '../utils/client-origin.js'
 
 export const resourceRouter = Router()
 export const resourceImageRouter = Router()
@@ -21,7 +22,6 @@ const uploadDirectory = env.RESOURCE_UPLOAD_DIR
   ? resolve(env.RESOURCE_UPLOAD_DIR)
   : fileURLToPath(new URL('../../storage/resource-images/', import.meta.url))
 const includeImages = { images: { orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }] } } satisfies Prisma.ResourceInclude
-const trustedOrigin = new URL(env.CLIENT_ORIGIN).origin
 const revisionSchema = z.number().int().positive().max(2_147_483_646)
 const writeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -30,10 +30,7 @@ const writeLimiter = rateLimit({
   legacyHeaders: false,
   message: { status: 'error', message: 'Too many edits. Please try again shortly.' },
 })
-const checkOrigin: RequestHandler = (request, _response, next) => {
-  if (request.get('origin') !== trustedOrigin) throw new HttpError(403, 'This request origin is not allowed.')
-  next()
-}
+const checkOrigin: RequestHandler = requireClientOrigin
 const adminWrite = [requireRoles('ADMIN', 'SUPER_ADMIN'), checkOrigin, writeLimiter]
 const noStore: RequestHandler = (_request, response, next) => {
   response.setHeader('Cache-Control', 'no-store')

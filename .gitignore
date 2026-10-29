@@ -8,6 +8,15 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.env
+.env.*
+*.zip
+*.apk
+*.aab
+*.jks
+*.keystore
+*.backup
+project_trash/
 dist
 dist-ssr
 *.local

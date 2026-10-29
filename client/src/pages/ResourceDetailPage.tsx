@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { getResource } from '../resources/api'
 import ResourcePhoto from '../resources/ResourcePhoto'
+import { resourcePhotos } from '../resources/college-photos'
 import { resourceLabels, type Resource } from '../resources/types'
 import BookingForm from '../bookings/BookingForm'
 import AvailabilityCalendar from '../bookings/AvailabilityCalendar'
@@ -28,7 +29,8 @@ export default function ResourceDetailPage() {
   }, [id, retry])
   if (error) return <section className="cr-page"><Link className="cr-back" to="/app/resources"><ArrowLeft size={17} />Resources</Link><div className="cr-alert cr-alert-error" role="alert">{error}</div><button className="cr-button" onClick={() => setRetry((value) => value + 1)}>Try again</button></section>
   if (!resource) return <div className="cr-empty" role="status">Loading resource…</div>
-  const photo = resource.images.find((image) => image.id === selectedPhoto) ?? resource.images[0]
+  const images = resourcePhotos(resource)
+  const photo = images.find((image) => image.id === selectedPhoto) ?? images[0]
   const back = resource.isDemo ? '/app/manage/resources?view=demo' : administrator && resource.status !== 'ACTIVE' ? '/app/manage/resources' : '/app/resources'
   return (
     <section className="cr-page">
@@ -37,7 +39,7 @@ export default function ResourceDetailPage() {
       {resource.isDemo && <p className="cr-alert">This is sample data, not a verified college venue. It is visible only to administrators and cannot be booked.</p>}
       <div className="cr-detail-grid"><div>
         <ResourcePhoto photo={photo} className="cr-hero-photo" />
-        {resource.images.length > 1 && <div className="cr-thumbnails" aria-label="Resource photos">{resource.images.map((image, index) => <button key={image.id} type="button" aria-label={`Show photo ${index + 1}: ${image.altText}`} aria-pressed={image.id === photo?.id} onClick={() => setSelectedPhoto(image.id)}><ResourcePhoto photo={image} /></button>)}</div>}
+        {images.length > 1 && <div className="cr-thumbnails" aria-label="Resource photos">{images.map((image, index) => <button key={image.id} type="button" aria-label={`Show photo ${index + 1}: ${image.altText}`} aria-pressed={image.id === photo?.id} onClick={() => setSelectedPhoto(image.id)}><ResourcePhoto photo={image} /></button>)}</div>}
         {photo && <p className="cr-caption">{photo.altText}</p>}
         {!resource.isDemo && resource.status === 'ACTIVE' && <AvailabilityCalendar resource={resource} refreshKey={availabilityVersion} />}
         <section className="cr-panel"><h2>About this {resourceLabels[resource.type].toLowerCase()}</h2><p className="cr-preserve-lines">{resource.description}</p>{resource.features.length > 0 && <><h3>Facilities & features</h3><ul className="cr-feature-list">{resource.features.map((feature, index) => <li key={`${feature}-${index}`}>{feature}</li>)}</ul></>}{resource.instructions && <><h3>Before you use this resource</h3><p className="cr-preserve-lines">{resource.instructions}</p></>}</section>
@@ -48,7 +50,7 @@ export default function ResourceDetailPage() {
           {!resource.isDemo && resource.status === 'ACTIVE' && administrator && <p className="cr-help">Faculty, staff and administrators can submit booking requests for this resource.</p>}
         </section>
         <BookingForm resource={resource} onCreated={() => setAvailabilityVersion((value) => value + 1)} />
-        <section className="cr-panel"><h2>Booking rules</h2><dl className="cr-policy-list"><div><dt>Approval</dt><dd>Required for every request</dd></div><div><dt>Book ahead</dt><dd>Up to {resource.advanceBookingDays} days</dd></div><div><dt>Minimum notice</dt><dd>{resource.minimumNoticeHours} hours</dd></div><div><dt>Maximum duration</dt><dd>{resource.maximumDurationMinutes} minutes</dd></div><div><dt>Buffers</dt><dd>{resource.bufferBeforeMinutes} min before / {resource.bufferAfterMinutes} min after</dd></div><div><dt>Cancel before</dt><dd>{resource.cancellationDeadlineHours} hours before the start</dd></div></dl></section>
+        <section className="cr-panel"><h2>Booking rules</h2><dl className="cr-policy-list"><div><dt>Approval</dt><dd>Required for every request</dd></div><div><dt>Book ahead</dt><dd>Up to {resource.advanceBookingDays} days</dd></div><div><dt>Minimum notice</dt><dd>{resource.minimumNoticeHours >= 24 && resource.minimumNoticeHours % 24 === 0 ? `${resource.minimumNoticeHours / 24} days` : `${resource.minimumNoticeHours} hours`}</dd></div><div><dt>Maximum duration</dt><dd>{resource.maximumDurationMinutes} minutes</dd></div><div><dt>Buffers</dt><dd>{resource.bufferBeforeMinutes} min before / {resource.bufferAfterMinutes} min after</dd></div><div><dt>Cancel before</dt><dd>{resource.cancellationDeadlineHours} hours before the start</dd></div></dl></section>
       </aside></div>
     </section>
   )

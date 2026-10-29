@@ -2,7 +2,10 @@ import { ArrowLeft, CalendarCheck, ShieldCheck, TicketCheck, UtensilsCrossed } f
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth'
+import { lastWorkspace } from '../auth/landing'
+import { loginDestination } from '../auth/login-destination'
 import ThemeToggle from '../components/ThemeToggle'
+import { playInterfaceSound } from '../utils/interface-sounds'
 
 function LoginPage() {
   const auth = useAuth()
@@ -13,35 +16,12 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const service = new URLSearchParams(location.search).get('service')
-  const serviceDestination = service === 'canteen' ? '/app/canteen' : service === 'events' ? '/app/events' : service === 'security' ? '/app/security' : '/app'
   const serviceLabel = service === 'canteen' ? 'Canteen Orders' : service === 'events' ? 'Event Access' : service === 'security' ? 'Security Desk' : 'Space Bookings'
 
   const requestedPath = (location.state as { from?: unknown } | null)?.from
-  const requestedDestination =
-    typeof requestedPath === 'string' &&
-    requestedPath.startsWith('/') &&
-    !requestedPath.startsWith('//')
-      ? requestedPath
-      : serviceDestination
-
-  // A stale admin URL must never become the landing page for a faculty/staff
-  // account (for example after switching accounts in the same browser tab).
-  const administrator = auth.user?.role === 'ADMIN' || auth.user?.role === 'SUPER_ADMIN'
-  const destination =
-    !administrator && requestedDestination.startsWith('/app/manage/')
-      ? '/app'
-      : requestedDestination
-
   if (auth.status === 'authenticated') {
-    if (auth.user?.role === 'CANTEEN_STAFF' && service !== 'canteen') {
-      return <Navigate to={`/access-denied?service=${service === 'events' ? 'events' : 'spaces'}`} replace />
-    }
-    if (auth.user?.role === 'CANTEEN_STAFF' && service === 'canteen') {
-      return <Navigate to="/app/canteen/manage" replace />
-    }
-    if (auth.user?.role === 'SECURITY' && service !== 'security') return <Navigate to={`/access-denied?service=${service ?? 'spaces'}`} replace />
-    if (auth.user?.role === 'SECURITY') return <Navigate to="/app/security" replace />
-    return <Navigate to={destination} replace />
+    if (!service && !requestedPath && auth.user) return <Navigate to={lastWorkspace(auth.user)} replace />
+    if (auth.user) return <Navigate to={loginDestination(auth.user, service, requestedPath)} replace />
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -51,9 +31,8 @@ function LoginPage() {
 
     try {
       const loggedInUser = await auth.login(email, password)
-      if (loggedInUser.role === 'SECURITY') navigate(service === 'security' ? '/app/security' : `/access-denied?service=${service ?? 'spaces'}`, { replace: true })
-      else if (loggedInUser.role === 'CANTEEN_STAFF') navigate(service === 'canteen' ? '/app/canteen/manage' : `/access-denied?service=${service ?? 'spaces'}`, { replace: true })
-      else navigate(destination, { replace: true })
+      playInterfaceSound('success')
+      navigate(loginDestination(loggedInUser, service, requestedPath), { replace: true })
     } catch (error: unknown) {
       setFormError(error instanceof Error ? error.message : 'Sign in failed.')
     } finally {

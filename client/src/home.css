@@ -29,9 +29,9 @@
 
 .cr-home-brand { justify-self: start; }
 .cr-home-brand .cr-brand-wordmark { width: 184px; height: 32px; }
-.cr-home-mobile-wordmark { display: none; width: 184px; height: 32px; overflow: hidden; color: transparent; font-size: 0; white-space: nowrap; background: url('/branding/campusreserve-wordmark-dark.png') left center / contain no-repeat; }
+.cr-home-mobile-wordmark { display: none; width: 184px; height: 32px; overflow: hidden; color: transparent; font-size: 0; white-space: nowrap; background: url('/branding/campusreserve-wordmark-refined-dark.svg') left center / contain no-repeat; }
 .cr-home-mobile-wordmark em { font-style: italic; }
-.dark .cr-home-mobile-wordmark { background-image: url('/branding/campusreserve-wordmark.png'); }
+.dark .cr-home-mobile-wordmark { background-image: url('/branding/campusreserve-wordmark-refined-night.svg'); }
 .cr-home-nav-actions { justify-self: end; }
 
 .cr-home-nav-centre {
@@ -808,7 +808,16 @@
   }
   .dark .cr-product-mobile-close { background: rgba(255, 255, 255, .1); color: #fff; }
   .cr-home-nav-mobile > .cr-product-trigger { gap: .35rem; padding-inline: .65rem; font-size: .88rem; }
-  .cr-mobile-more-panel { width: calc(100vw - 24px); padding: 14px; }
+  .cr-mobile-more-panel {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100dvh - 120px);
+    padding: 14px;
+    transform: none;
+    animation: cr-product-mobile-panel-in 220ms cubic-bezier(.22, 1, .36, 1) both;
+  }
 
   .cr-mobile-menu-list { display: grid; gap: 8px; }
   .cr-mobile-menu-list button {
@@ -918,6 +927,17 @@
     font-size: .68em;
     vertical-align: -.06em;
   }
+  /* The staggered outgoing/incoming letters collide inside the small pill. */
+  .cr-home-phrase-layer-outgoing { display: none; }
+  .cr-home-phrase-layer-incoming .cr-home-phrase-char {
+    animation: cr-home-mobile-phrase-in 280ms ease-out both;
+    animation-delay: 0ms;
+  }
+}
+
+@keyframes cr-home-mobile-phrase-in {
+  from { opacity: 0; transform: translateY(14%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {

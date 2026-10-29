@@ -117,6 +117,14 @@ export type BookingVerification = {
   }
 }
 
+export type BookingSuggestion = {
+  referenceCode: string
+  title: string
+  resourceName: string
+  startAt: string
+  endAt: string
+}
+
 export interface AdminCalendarResource {
   id: string
   name: string
