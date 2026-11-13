@@ -48,3 +48,4 @@ No account, password or production secret is included. No changes are made to yo
 
 Frontend build, lint and 16 tests passed. Backend type-check and 89 tests passed, including five tests for the venue rules, sports validation, repeat-run behaviour, existing-resource preservation, duplicate names and archived resources. Database transaction behaviour was exercised using a fake transaction; the new migration and setup have not been executed against a live PostgreSQL database here. Live browser and Android visual testing remain to be done on the user's devices.
 # Superseded policy: v16 uses 24 hours' beta notice. Follow BETA_UPDATE_V16.md for current setup commands.
+
