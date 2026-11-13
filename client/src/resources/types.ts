@@ -1,4 +1,4 @@
-export type ResourceType = 'ROOM' | 'HALL' | 'LABORATORY' | 'EQUIPMENT'
+export type ResourceType = 'ROOM' | 'HALL' | 'LABORATORY' | 'EQUIPMENT' | 'SPORTS_FACILITY'
 export type ResourceStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
 export type ResourceScope = 'catalogue' | 'manage' | 'demo'
 export type ResourceBlockType = 'MAINTENANCE' | 'COLLEGE_EVENT' | 'HOLIDAY' | 'EMERGENCY' | 'OTHER'
@@ -57,7 +57,7 @@ export interface Resource extends ResourceInput {
 }
 
 export const resourceLabels: Record<ResourceType, string> = {
-  HALL: 'Hall', ROOM: 'Room', LABORATORY: 'Lab', EQUIPMENT: 'Equipment',
+  HALL: 'Hall', ROOM: 'Room', LABORATORY: 'Lab', EQUIPMENT: 'Equipment', SPORTS_FACILITY: 'Sports facility',
 }
 
 export const emptyResource: ResourceInput = {

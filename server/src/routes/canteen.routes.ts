@@ -6,10 +6,10 @@ import { prisma } from '../config/prisma.js'
 import { requireAuth, requireRoles } from '../middleware/auth.js'
 import { HttpError } from '../utils/http-error.js'
 import { canteenItemSchema, canteenOrderCreateSchema, canteenOrderUpdateSchema } from '../utils/canteen-input.js'
+import { requireClientOrigin } from '../utils/client-origin.js'
 
 export const canteenRouter = Router()
-const trustedOrigin = new URL(process.env.CLIENT_ORIGIN ?? 'http://localhost:5173').origin
-const checkOrigin: RequestHandler = (request, _response, next) => { if (request.get('origin') !== trustedOrigin) throw new HttpError(403, 'This request origin is not allowed.'); next() }
+const checkOrigin: RequestHandler = requireClientOrigin
 const limiter = rateLimit({ windowMs: 15 * 60_000, limit: 80, standardHeaders: 'draft-7', legacyHeaders: false })
 const manage = requireRoles('CANTEEN_STAFF', 'ADMIN', 'SUPER_ADMIN')
 const includeOrder = { items: { orderBy: { id: 'asc' as const } }, requester: { select: { id: true, name: true, email: true, department: { select: { name: true } } } }, handler: { select: { id: true, name: true } } }

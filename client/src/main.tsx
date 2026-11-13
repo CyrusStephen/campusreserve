@@ -7,6 +7,10 @@ import { AuthProvider } from './auth/AuthProvider'
 import { ThemeProvider } from './theme/ThemeProvider'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import LaunchSplash from './components/LaunchSplash'
+import { unlockInterfaceAudio } from './utils/interface-sounds'
+
+document.addEventListener('pointerdown', unlockInterfaceAudio, { capture: true })
+document.addEventListener('keydown', unlockInterfaceAudio, { capture: true })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

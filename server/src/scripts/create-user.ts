@@ -82,7 +82,7 @@ async function collectInput() {
 
   const name = (await prompt.question('Full name: ')).trim()
   const emailInput = await prompt.question('Email: ')
-  const roleInput = (
+  const roleInput = process.argv.includes('--admin-only') ? 'ADMIN' : (
     await prompt.question(
       'Role [FACULTY, STAFF, CANTEEN_STAFF, SECURITY, ADMIN, SUPER_ADMIN] (ADMIN): ',
     )

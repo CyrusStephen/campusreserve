@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { claimWaitlist, cancelWaitlist, listMyWaitlist } from '../bookings/api'
 import type { WaitlistEntry } from '../bookings/types'
 import { useAuth } from '../auth/useAuth'
+import { playInterfaceSound } from '../utils/interface-sounds'
 
 function dateTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
@@ -43,6 +44,7 @@ export default function WaitlistPage() {
     setWorking(true); setError('')
     try {
       await cancelWaitlist(id)
+      playInterfaceSound('cancel')
       setItems((current) => current?.filter((item) => item.id !== id) ?? null)
       setMessage('Waitlist entry cancelled.')
     } catch (failure: unknown) {
@@ -72,6 +74,7 @@ export default function WaitlistPage() {
         assignedToEmail: claim.assignedToEmail.trim(),
         assignedToPhone: claim.assignedToPhone.trim(),
       })
+      playInterfaceSound('success')
       setItems((current) => current?.filter((item) => item.id !== claim.id) ?? null)
       setClaim(null)
       setMessage('The slot was claimed and a booking request was submitted for administrator approval.')

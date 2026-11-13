@@ -1,32 +1,29 @@
-# React + TypeScript + Vite
+# CampusReserve
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+CampusReserve is a campus booking and canteen platform. The React and Capacitor application lives in `client/`; the Express and Prisma API lives in `server/`.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Install dependencies and run each service from its own directory:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+cd client
+npm ci
+npm run dev -- --host 0.0.0.0 --port 5173 --strictPort
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+In another terminal:
+
+```powershell
+cd server
+npm ci
+npm run dev
+```
+
+Each service has its own scripts in its `package.json`. Keep local `.env` files out of shared ZIPs and Git. For Vercel, set the project Root Directory to `client` and deploy the backend separately.
+
+## Android demo
+
+The Android project in `client/android/` currently loads the development site at `http://10.107.5.74:5173`. Change the IP in `client/capacitor.config.ts` and `client/android/app/src/main/assets/capacitor.config.json` if the laptop's Wi-Fi address changes. Set your private `client/.env.local` API URL to the same laptop IP on port 5000. Start both development servers and confirm that the phone can reach `/api/health` before opening the app. Build a debug APK from Android Studio by opening `client/android/` or running `gradlew.bat assembleDebug` there. The debug APK is at `client/android/app/build/outputs/apk/debug/app-debug.apk`.
+
+This development build permits local HTTP. Remove its live server URL and the manifest's cleartext setting, and configure a production API, before distributing a release build.

@@ -8,8 +8,8 @@ export const tenantBrand = {
 
 export const productBrand = {
   markUrl: '/campusreserve-logo.png',
-  wordmarkUrl: '/branding/campusreserve-wordmark.png',
-  wordmarkDarkUrl: '/branding/campusreserve-wordmark-dark.png',
+  wordmarkUrl: '/branding/campusreserve-wordmark-refined-night.svg',
+  wordmarkDarkUrl: '/branding/campusreserve-wordmark-refined-dark.svg',
   splashVideoUrl: '/branding/campusreserve-splash-final.mp4',
   splashPosterUrl: '/branding/campusreserve-wordmark-hold.jpg',
 }

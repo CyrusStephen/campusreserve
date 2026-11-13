@@ -3,7 +3,7 @@ import { isPublicHttpsUrl } from './resource-media.js'
 
 const resourceFields = {
   name: z.string().trim().min(2).max(150),
-  type: z.enum(['ROOM', 'HALL', 'LABORATORY', 'EQUIPMENT']),
+  type: z.enum(['ROOM', 'HALL', 'LABORATORY', 'EQUIPMENT', 'SPORTS_FACILITY']),
   status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']),
   description: z.string().trim().min(10).max(5000),
   building: z.string().trim().min(1).max(120),
@@ -24,7 +24,7 @@ const resourceFields = {
 
 function validatePolicy(data: z.infer<typeof baseSchema>, context: z.RefinementCtx) {
   if (data.type !== 'EQUIPMENT' && (!data.isExclusive || data.totalQuantity !== 1)) {
-    context.addIssue({ code: 'custom', path: ['isExclusive'], message: 'Rooms, halls and labs must be exclusive with quantity 1.' })
+    context.addIssue({ code: 'custom', path: ['isExclusive'], message: 'Rooms, halls, labs and sports facilities must be exclusive with quantity 1.' })
   }
   if (data.type !== 'EQUIPMENT' && data.capacity === null) {
     context.addIssue({ code: 'custom', path: ['capacity'], message: 'Enter the capacity for this space.' })
@@ -63,7 +63,7 @@ export const resourceBlockCreateSchema = z.object({
 export const resourceQuerySchema = z.object({
   scope: z.enum(['catalogue', 'manage', 'demo']).default('catalogue'),
   q: z.string().trim().max(100).default(''),
-  type: z.enum(['ROOM', 'HALL', 'LABORATORY', 'EQUIPMENT']).optional(),
+  type: z.enum(['ROOM', 'HALL', 'LABORATORY', 'EQUIPMENT', 'SPORTS_FACILITY']).optional(),
   page: z.coerce.number().int().min(1).max(100_000).default(1),
   pageSize: z.coerce.number().int().min(1).max(48).default(12),
 }).strict()

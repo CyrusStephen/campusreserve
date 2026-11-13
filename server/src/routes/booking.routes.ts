@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto'
 import { Router, type Request, type RequestHandler } from 'express'
 import { rateLimit } from 'express-rate-limit'
 import { z } from 'zod'
-import { env } from '../config/env.js'
 import { prisma } from '../config/prisma.js'
 import type { Prisma } from '../generated/prisma/client.js'
 import { requireAuth, requireRoles } from '../middleware/auth.js'
@@ -12,10 +11,10 @@ import { HttpError } from '../utils/http-error.js'
 import { notifyAdministrators, notifyUser } from '../utils/notifications.js'
 import { bookingMailData, queueBookingChangedMail, queueBookingDecisionMail, queueBookingSubmittedMail, queueOccurrenceDecisionMail } from '../utils/booking-mail.js'
 import { advanceWaitlist } from '../utils/waitlist.js'
+import { requireClientOrigin } from '../utils/client-origin.js'
 
 export const bookingRouter = Router()
 
-const trustedOrigin = new URL(env.CLIENT_ORIGIN).origin
 const activeOccurrenceStatuses = ['PENDING', 'APPROVED'] as const
 const bookingInclude = {
   requester: { select: { id: true, name: true, email: true, role: true } },
@@ -31,10 +30,7 @@ const writeLimiter = rateLimit({
   legacyHeaders: false,
   message: { status: 'error', message: 'Too many booking updates. Please try again shortly.' },
 })
-const checkOrigin: RequestHandler = (request, _response, next) => {
-  if (request.get('origin') !== trustedOrigin) throw new HttpError(403, 'This request origin is not allowed.')
-  next()
-}
+const checkOrigin: RequestHandler = requireClientOrigin
 const noStore: RequestHandler = (_request, response, next) => {
   response.setHeader('Cache-Control', 'no-store')
   next()
@@ -49,6 +45,41 @@ function isAdministrator(request: Request): boolean {
 function reservationId(request: Request): string {
   return z.uuid().parse(request.params.id)
 }
+
+bookingRouter.get('/verify/suggestions', requireRoles('SECURITY', 'ADMIN', 'SUPER_ADMIN'), async (request, response) => {
+  const query = z.string().trim().max(24).regex(/^[A-Za-z0-9-]*$/).parse(request.query.q ?? '').toUpperCase()
+  if (query && query.length < 3) {
+    response.json({ status: 'ok', data: [] })
+    return
+  }
+
+  const now = Date.now()
+  const occurrences = await prisma.reservationOccurrence.findMany({
+    where: {
+      status: 'APPROVED',
+      endAt: { gte: new Date(now - 12 * 60 * 60_000) },
+      startAt: { lte: new Date(now + 7 * 24 * 60 * 60_000) },
+      ...(query ? { reservation: { is: { referenceCode: { startsWith: query } } } } : {}),
+    },
+    orderBy: { startAt: 'asc' },
+    take: 150,
+    select: {
+      startAt: true,
+      endAt: true,
+      resource: { select: { name: true } },
+      reservation: { select: { referenceCode: true, title: true } },
+    },
+  })
+
+  const references = new Set<string>()
+  const suggestions = occurrences.flatMap((occurrence) => {
+    const { referenceCode, title } = occurrence.reservation
+    if (references.has(referenceCode) || references.size >= 12) return []
+    references.add(referenceCode)
+    return [{ referenceCode, title, resourceName: occurrence.resource.name, startAt: occurrence.startAt, endAt: occurrence.endAt }]
+  })
+  response.json({ status: 'ok', data: suggestions })
+})
 
 bookingRouter.get('/verify/:referenceCode', requireRoles('SECURITY', 'ADMIN', 'SUPER_ADMIN'), async (request, response) => {
   const referenceCode = z.string().trim().min(6).max(24).regex(/^[A-Za-z0-9-]+$/).parse(request.params.referenceCode).toUpperCase()

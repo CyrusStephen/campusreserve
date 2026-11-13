@@ -23,6 +23,7 @@ const environmentSchema = z.object({
     .url()
     .default('http://localhost:5173'),
   RESOURCE_UPLOAD_DIR: z.string().trim().min(1).optional(),
+  REFRESH_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   SMTP_HOST: z.string().trim().min(1).optional(),
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_SECURE: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),

@@ -53,7 +53,7 @@ body {
 .dark .cr-brand-wordmark-auto .cr-brand-wordmark-fallback { color: #f2f0ea; opacity: 1; }
 .dark .cr-brand-wordmark-auto.cr-brand-wordmark-light-ready .cr-brand-wordmark-fallback,
 .cr-brand-wordmark-light.cr-brand-wordmark-light-ready .cr-brand-wordmark-fallback { opacity: 0; }
-.cr-brand-wordmark-light .cr-brand-wordmark-fallback { color: #f2f0ea; }
+.cr-brand-wordmark-light .cr-brand-wordmark-fallback { color: #a8c5ff; }
 .cr-brand-wordmark-dark .cr-brand-wordmark-fallback { color: #203a9b; }
 
 .cr-brand-wordmark-light-ink { opacity: 0; }
@@ -69,3 +69,6 @@ a,
 input {
   font: inherit;
 }
+
+.cr-home-connection-note { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 12px 18px; background: #fff4d9; color: #2b2518; font-size: .9rem; text-align: center; }
+.cr-home-connection-note button { border: 1px solid currentColor; border-radius: 8px; padding: 7px 12px; font-weight: 700; }

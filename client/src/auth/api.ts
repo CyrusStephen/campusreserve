@@ -1,7 +1,10 @@
 import type { AuthSession } from './types'
 
 const configuredApiUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, '')
-const apiBaseUrl = configuredApiUrl ?? (import.meta.env.DEV ? 'http://localhost:5000' : '')
+const developmentApiUrl = typeof window === 'undefined'
+  ? 'http://localhost:5000'
+  : `${window.location.protocol}//${window.location.hostname}:5000`
+const apiBaseUrl = configuredApiUrl ?? (import.meta.env.DEV ? developmentApiUrl : '')
 const apiRoot = `${apiBaseUrl}/api`
 
 let accessToken: string | null = null
@@ -147,7 +150,7 @@ async function withRefreshLock<T>(task: () => Promise<T>): Promise<T> {
 
 async function performRefresh(): Promise<AuthSession | null> {
   return withRefreshLock(async () => {
-    const response = await sendRequest('/auth/refresh', { method: 'POST' }, null)
+    const response = await sendRequest('/auth/refresh', { method: 'POST', signal: AbortSignal.timeout(12_000) }, null)
 
     if (response.status === 401) {
       await response.text()

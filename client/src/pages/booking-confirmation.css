@@ -1,0 +1,20 @@
+.cr-confirmation-page { max-width: 1050px; }
+.cr-confirmation-controls { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+.cr-confirmation-print h1 { font-size: clamp(1.35rem, 5vw, 2rem); overflow-wrap: anywhere; }
+.cr-confirmation-print h2 { margin: 8px 0 22px; }
+.cr-confirmation-details { display: grid; gap: 8px; margin: 18px 0 28px; }
+.cr-confirmation-details p { display: flex; flex-wrap: wrap; gap: 8px 15px; margin: 0; overflow-wrap: anywhere; }
+.cr-confirmation-details strong { min-width: 95px; }
+.cr-confirmation-table-wrap { overflow-x: auto; }
+.cr-confirmation-print table { border-collapse: collapse; width: 100%; min-width: 560px; }
+.cr-confirmation-print th, .cr-confirmation-print td { border: 1px solid var(--cr-border); padding: 10px; text-align: left; font-size: .82rem; }
+.cr-confirmation-print .cr-help { margin-top: 20px; }
+@media print {
+  @page { margin: 16mm; }
+  body { background: white !important; }
+  body * { visibility: hidden !important; }
+  .cr-confirmation-print, .cr-confirmation-print * { visibility: visible !important; }
+  .cr-confirmation-print { position: absolute; left: 0; top: 0; width: 100%; color: #222 !important; background: white !important; border: 0 !important; box-shadow: none !important; }
+  .cr-confirmation-print table { min-width: 0; }
+  .cr-confirmation-print th, .cr-confirmation-print td { border-color: #bbb; }
+}

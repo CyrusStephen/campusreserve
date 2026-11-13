@@ -1,6 +1,6 @@
-import { Bell, CheckCheck } from 'lucide-react'
+import { ArrowLeft, Bell, CheckCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { listNotifications, markAllNotificationsRead, markNotificationRead } from '../notifications/api'
 import type { NotificationData } from '../notifications/types'
 import { useAuth } from '../auth/useAuth'
@@ -11,6 +11,7 @@ function dateTime(value: string): string {
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const [data, setData] = useState<NotificationData | null>(null)
   const [workingId, setWorkingId] = useState<string | null>(null)
@@ -67,7 +68,12 @@ export default function NotificationsPage() {
     } finally { setWorkingId(null) }
   }
 
+  const fallback = location.pathname.startsWith('/app/canteen/')
+    ? user?.role === 'CANTEEN_STAFF' ? '/app/canteen/manage' : '/app/canteen'
+    : location.pathname.startsWith('/app/events/') ? '/app/events' : '/app'
+
   return <section className="cr-page">
+    <button className="cr-button cr-notifications-back" type="button" onClick={() => { if (window.history.state?.idx > 0) navigate(-1); else navigate(fallback) }}><ArrowLeft size={17} />Back to workspace</button>
     <header className="cr-page-heading"><div><p className="cr-eyebrow">Updates</p><h1>Notifications</h1><p>Booking submissions, decisions and schedule changes stay here until you have seen them.</p></div>{Boolean(data?.unreadCount) && <button className="cr-button" type="button" disabled={workingId === 'all'} onClick={() => void markAllRead()}><CheckCheck size={17} />{workingId === 'all' ? 'Updating…' : 'Mark all read'}</button>}</header>
     {error && <div className="cr-alert cr-alert-error" role="alert"><p>{error}</p><button className="cr-button" type="button" onClick={() => setRetry((value) => value + 1)}>Reload</button></div>}
     {!data && !error && <div className="cr-empty" role="status">Loading notifications…</div>}

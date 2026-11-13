@@ -14,6 +14,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     )
   }
 
+  if (auth.status === 'unavailable') return <main className="grid min-h-screen place-items-center p-6"><div role="alert"><p>Could not reach CampusReserve to check your session. Your login may still be active.</p><button type="button" onClick={() => void auth.retrySession()}>Try again</button></div></main>
+
   if (auth.status !== 'authenticated') {
     const from = `${location.pathname}${location.search}${location.hash}`
     return <Navigate to="/login" replace state={{ from }} />

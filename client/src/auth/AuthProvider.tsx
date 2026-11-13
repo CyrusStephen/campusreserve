@@ -8,6 +8,7 @@ import {
 import { loginRequest, logoutRequest, refreshSession, subscribeSession } from './api'
 import { AuthContext, type AuthContextValue } from './AuthContext'
 import type { AuthStatus, AuthUser } from './types'
+import { forgetWorkspace } from './landing'
 
 function messageFrom(error: unknown): string {
   return error instanceof Error
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       .catch((sessionError: unknown) => {
         if (cancelled) return
         setUser(null)
-        setStatus('anonymous')
+        setStatus('unavailable')
         setError(messageFrom(sessionError))
       })
 
@@ -57,7 +58,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setStatus(session ? 'authenticated' : 'anonymous')
     } catch (sessionError: unknown) {
       setUser(null)
-      setStatus('anonymous')
+      setStatus('unavailable')
       setError(messageFrom(sessionError))
     }
   }, [])
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     try {
       await logoutRequest()
+      if (user) forgetWorkspace(user)
       setUser(null)
       setStatus('anonymous')
     } catch (logoutError: unknown) {
@@ -89,11 +91,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setError(message)
       throw new Error(message)
     }
-  }, [])
+  }, [user])
+
+  const updateDisplayName = useCallback((name: string) => setUser((current) => current ? { ...current, name } : null), [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, status, error, login, logout, retrySession }),
-    [error, login, logout, retrySession, status, user],
+    () => ({ user, status, error, login, logout, retrySession, updateDisplayName }),
+    [error, login, logout, retrySession, status, updateDisplayName, user],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

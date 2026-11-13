@@ -32,7 +32,7 @@ export default function AppFooter({ compact = false }: AppFooterProps) {
     return <footer className="cr-footer cr-footer-compact">
       <span>© {year} CampusReserve</span>
       <nav aria-label="Footer">
-        <Link to="/">All products</Link>
+        <Link to="/products">All products</Link>
         <a href={`mailto:${supportEmail}`}>Support</a>
         <HealthStatus compact />
       </nav>

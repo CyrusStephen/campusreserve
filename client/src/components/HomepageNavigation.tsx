@@ -163,6 +163,19 @@ function MobileNavigation({ openProduct }: { openProduct: () => void }) {
   const [moreOpen, setMoreOpen] = useState(false)
   const [view, setView] = useState<'more' | 'how' | 'support'>('more')
   const menuRef = useRef<HTMLDivElement>(null)
+  const [panelTop, setPanelTop] = useState(0)
+
+  useEffect(() => {
+    if (!moreOpen) return
+    const positionPanel = () => setPanelTop((menuRef.current?.getBoundingClientRect().bottom ?? 0) + 18)
+    positionPanel()
+    window.addEventListener('resize', positionPanel)
+    window.addEventListener('scroll', positionPanel, { passive: true })
+    return () => {
+      window.removeEventListener('resize', positionPanel)
+      window.removeEventListener('scroll', positionPanel)
+    }
+  }, [moreOpen])
 
   const close = () => {
     setMoreOpen(false)
@@ -196,7 +209,7 @@ function MobileNavigation({ openProduct }: { openProduct: () => void }) {
       {moreOpen ? <X aria-hidden="true" size={18} /> : <Menu aria-hidden="true" size={18} />}
       More
     </button>
-    {moreOpen && <section className="cr-mobile-more-panel" id="cr-mobile-more-panel">
+    {moreOpen && <section className="cr-mobile-more-panel" id="cr-mobile-more-panel" style={{ top: panelTop }}>
       {view === 'more' ? <div className="cr-mobile-menu-list">
         <button onClick={() => { close(); openProduct() }} type="button"><strong>Product</strong><span>Bookings, orders and access</span><ArrowRight size={17} /></button>
         <button onClick={() => setView('how')} type="button"><strong>How it works</strong><span>See the three simple steps</span><ArrowRight size={17} /></button>

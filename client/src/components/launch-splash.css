@@ -5,6 +5,8 @@
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
   isolation: isolate;
   background: #192477 url('/branding/campusreserve-splash-background.jpg') center / cover no-repeat;
   color: #fff;
