@@ -47,6 +47,7 @@ enum CanteenPaymentStatus {
 enum UserStatus {
   ACTIVE
   INACTIVE
+  PENDING
 }
 
 enum ResourceType {
@@ -131,6 +132,8 @@ model User {
   role         UserRole
   status       UserStatus @default(ACTIVE)
   departmentId String?    @db.Uuid
+  signupDepartment String? @db.VarChar(120)
+  emailVerifiedAt DateTime? @db.Timestamptz(3)
   lastLoginAt  DateTime?  @db.Timestamptz(3)
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
@@ -149,6 +152,17 @@ model User {
 
   @@index([departmentId])
   @@index([role, status])
+  @@index([status, createdAt])
+}
+
+model SignupVerification {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String   @unique @db.VarChar(255)
+  lastRequestedAt DateTime @db.Timestamptz(3)
+  expiresAt       DateTime @db.Timestamptz(3)
+  deliveries      EmailDelivery[]
+
+  @@index([expiresAt])
 }
 
 model CanteenItem {
@@ -278,9 +292,16 @@ model ResourceImage {
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now()) @db.Timestamptz(3)
 
-  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resource Resource              @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  content  ResourceImageContent?
 
   @@index([resourceId, sortOrder])
+}
+
+model ResourceImageContent {
+  imageId String        @id @db.Uuid
+  bytes   Bytes         @db.ByteA
+  image   ResourceImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
 }
 
 model Reservation {
@@ -381,9 +402,12 @@ model EmailDelivery {
   sentAt        DateTime?           @db.Timestamptz(3)
   createdAt     DateTime            @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime            @updatedAt @db.Timestamptz(3)
+  signupVerificationId String? @db.Uuid
+  signupVerification SignupVerification? @relation(fields: [signupVerificationId], references: [id], onDelete: Cascade)
 
   @@index([status, nextAttemptAt])
   @@index([createdAt])
+  @@index([signupVerificationId])
 }
 
 model ResourceBlock {

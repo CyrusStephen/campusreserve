@@ -233,6 +233,7 @@ export type ResourceImageWhereInput = {
   sortOrder?: Prisma.IntFilter<"ResourceImage"> | number
   createdAt?: Prisma.DateTimeFilter<"ResourceImage"> | Date | string
   resource?: Prisma.XOR<Prisma.ResourceScalarRelationFilter, Prisma.ResourceWhereInput>
+  content?: Prisma.XOR<Prisma.ResourceImageContentNullableScalarRelationFilter, Prisma.ResourceImageContentWhereInput> | null
 }
 
 export type ResourceImageOrderByWithRelationInput = {
@@ -244,6 +245,7 @@ export type ResourceImageOrderByWithRelationInput = {
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   resource?: Prisma.ResourceOrderByWithRelationInput
+  content?: Prisma.ResourceImageContentOrderByWithRelationInput
 }
 
 export type ResourceImageWhereUniqueInput = Prisma.AtLeast<{
@@ -258,6 +260,7 @@ export type ResourceImageWhereUniqueInput = Prisma.AtLeast<{
   sortOrder?: Prisma.IntFilter<"ResourceImage"> | number
   createdAt?: Prisma.DateTimeFilter<"ResourceImage"> | Date | string
   resource?: Prisma.XOR<Prisma.ResourceScalarRelationFilter, Prisma.ResourceWhereInput>
+  content?: Prisma.XOR<Prisma.ResourceImageContentNullableScalarRelationFilter, Prisma.ResourceImageContentWhereInput> | null
 }, "id">
 
 export type ResourceImageOrderByWithAggregationInput = {
@@ -296,6 +299,7 @@ export type ResourceImageCreateInput = {
   sortOrder?: number
   createdAt?: Date | string
   resource: Prisma.ResourceCreateNestedOneWithoutImagesInput
+  content?: Prisma.ResourceImageContentCreateNestedOneWithoutImageInput
 }
 
 export type ResourceImageUncheckedCreateInput = {
@@ -306,6 +310,7 @@ export type ResourceImageUncheckedCreateInput = {
   altText: string
   sortOrder?: number
   createdAt?: Date | string
+  content?: Prisma.ResourceImageContentUncheckedCreateNestedOneWithoutImageInput
 }
 
 export type ResourceImageUpdateInput = {
@@ -316,6 +321,7 @@ export type ResourceImageUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resource?: Prisma.ResourceUpdateOneRequiredWithoutImagesNestedInput
+  content?: Prisma.ResourceImageContentUpdateOneWithoutImageNestedInput
 }
 
 export type ResourceImageUncheckedUpdateInput = {
@@ -326,6 +332,7 @@ export type ResourceImageUncheckedUpdateInput = {
   altText?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  content?: Prisma.ResourceImageContentUncheckedUpdateOneWithoutImageNestedInput
 }
 
 export type ResourceImageCreateManyInput = {
@@ -405,6 +412,11 @@ export type ResourceImageSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
 }
 
+export type ResourceImageScalarRelationFilter = {
+  is?: Prisma.ResourceImageWhereInput
+  isNot?: Prisma.ResourceImageWhereInput
+}
+
 export type ResourceImageCreateNestedManyWithoutResourceInput = {
   create?: Prisma.XOR<Prisma.ResourceImageCreateWithoutResourceInput, Prisma.ResourceImageUncheckedCreateWithoutResourceInput> | Prisma.ResourceImageCreateWithoutResourceInput[] | Prisma.ResourceImageUncheckedCreateWithoutResourceInput[]
   connectOrCreate?: Prisma.ResourceImageCreateOrConnectWithoutResourceInput | Prisma.ResourceImageCreateOrConnectWithoutResourceInput[]
@@ -447,6 +459,20 @@ export type ResourceImageUncheckedUpdateManyWithoutResourceNestedInput = {
   deleteMany?: Prisma.ResourceImageScalarWhereInput | Prisma.ResourceImageScalarWhereInput[]
 }
 
+export type ResourceImageCreateNestedOneWithoutContentInput = {
+  create?: Prisma.XOR<Prisma.ResourceImageCreateWithoutContentInput, Prisma.ResourceImageUncheckedCreateWithoutContentInput>
+  connectOrCreate?: Prisma.ResourceImageCreateOrConnectWithoutContentInput
+  connect?: Prisma.ResourceImageWhereUniqueInput
+}
+
+export type ResourceImageUpdateOneRequiredWithoutContentNestedInput = {
+  create?: Prisma.XOR<Prisma.ResourceImageCreateWithoutContentInput, Prisma.ResourceImageUncheckedCreateWithoutContentInput>
+  connectOrCreate?: Prisma.ResourceImageCreateOrConnectWithoutContentInput
+  upsert?: Prisma.ResourceImageUpsertWithoutContentInput
+  connect?: Prisma.ResourceImageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ResourceImageUpdateToOneWithWhereWithoutContentInput, Prisma.ResourceImageUpdateWithoutContentInput>, Prisma.ResourceImageUncheckedUpdateWithoutContentInput>
+}
+
 export type ResourceImageCreateWithoutResourceInput = {
   id?: string
   url: string
@@ -454,6 +480,7 @@ export type ResourceImageCreateWithoutResourceInput = {
   altText: string
   sortOrder?: number
   createdAt?: Date | string
+  content?: Prisma.ResourceImageContentCreateNestedOneWithoutImageInput
 }
 
 export type ResourceImageUncheckedCreateWithoutResourceInput = {
@@ -463,6 +490,7 @@ export type ResourceImageUncheckedCreateWithoutResourceInput = {
   altText: string
   sortOrder?: number
   createdAt?: Date | string
+  content?: Prisma.ResourceImageContentUncheckedCreateNestedOneWithoutImageInput
 }
 
 export type ResourceImageCreateOrConnectWithoutResourceInput = {
@@ -504,6 +532,62 @@ export type ResourceImageScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ResourceImage"> | Date | string
 }
 
+export type ResourceImageCreateWithoutContentInput = {
+  id?: string
+  url: string
+  publicId?: string | null
+  altText: string
+  sortOrder?: number
+  createdAt?: Date | string
+  resource: Prisma.ResourceCreateNestedOneWithoutImagesInput
+}
+
+export type ResourceImageUncheckedCreateWithoutContentInput = {
+  id?: string
+  resourceId: string
+  url: string
+  publicId?: string | null
+  altText: string
+  sortOrder?: number
+  createdAt?: Date | string
+}
+
+export type ResourceImageCreateOrConnectWithoutContentInput = {
+  where: Prisma.ResourceImageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResourceImageCreateWithoutContentInput, Prisma.ResourceImageUncheckedCreateWithoutContentInput>
+}
+
+export type ResourceImageUpsertWithoutContentInput = {
+  update: Prisma.XOR<Prisma.ResourceImageUpdateWithoutContentInput, Prisma.ResourceImageUncheckedUpdateWithoutContentInput>
+  create: Prisma.XOR<Prisma.ResourceImageCreateWithoutContentInput, Prisma.ResourceImageUncheckedCreateWithoutContentInput>
+  where?: Prisma.ResourceImageWhereInput
+}
+
+export type ResourceImageUpdateToOneWithWhereWithoutContentInput = {
+  where?: Prisma.ResourceImageWhereInput
+  data: Prisma.XOR<Prisma.ResourceImageUpdateWithoutContentInput, Prisma.ResourceImageUncheckedUpdateWithoutContentInput>
+}
+
+export type ResourceImageUpdateWithoutContentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altText?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resource?: Prisma.ResourceUpdateOneRequiredWithoutImagesNestedInput
+}
+
+export type ResourceImageUncheckedUpdateWithoutContentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  altText?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ResourceImageCreateManyResourceInput = {
   id?: string
   url: string
@@ -520,6 +604,7 @@ export type ResourceImageUpdateWithoutResourceInput = {
   altText?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  content?: Prisma.ResourceImageContentUpdateOneWithoutImageNestedInput
 }
 
 export type ResourceImageUncheckedUpdateWithoutResourceInput = {
@@ -529,6 +614,7 @@ export type ResourceImageUncheckedUpdateWithoutResourceInput = {
   altText?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  content?: Prisma.ResourceImageContentUncheckedUpdateOneWithoutImageNestedInput
 }
 
 export type ResourceImageUncheckedUpdateManyWithoutResourceInput = {
@@ -551,6 +637,7 @@ export type ResourceImageSelect<ExtArgs extends runtime.Types.Extensions.Interna
   sortOrder?: boolean
   createdAt?: boolean
   resource?: boolean | Prisma.ResourceDefaultArgs<ExtArgs>
+  content?: boolean | Prisma.ResourceImage$contentArgs<ExtArgs>
 }, ExtArgs["result"]["resourceImage"]>
 
 export type ResourceImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -588,6 +675,7 @@ export type ResourceImageSelectScalar = {
 export type ResourceImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resourceId" | "url" | "publicId" | "altText" | "sortOrder" | "createdAt", ExtArgs["result"]["resourceImage"]>
 export type ResourceImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   resource?: boolean | Prisma.ResourceDefaultArgs<ExtArgs>
+  content?: boolean | Prisma.ResourceImage$contentArgs<ExtArgs>
 }
 export type ResourceImageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   resource?: boolean | Prisma.ResourceDefaultArgs<ExtArgs>
@@ -600,6 +688,7 @@ export type $ResourceImagePayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "ResourceImage"
   objects: {
     resource: Prisma.$ResourcePayload<ExtArgs>
+    content: Prisma.$ResourceImageContentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1004,6 +1093,7 @@ readonly fields: ResourceImageFieldRefs;
 export interface Prisma__ResourceImageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   resource<T extends Prisma.ResourceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResourceDefaultArgs<ExtArgs>>): Prisma.Prisma__ResourceClient<runtime.Types.Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  content<T extends Prisma.ResourceImage$contentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResourceImage$contentArgs<ExtArgs>>): Prisma.Prisma__ResourceImageContentClient<runtime.Types.Result.GetResult<Prisma.$ResourceImageContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1438,6 +1528,25 @@ export type ResourceImageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ResourceImages to delete.
    */
   limit?: number
+}
+
+/**
+ * ResourceImage.content
+ */
+export type ResourceImage$contentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ResourceImageContent
+   */
+  select?: Prisma.ResourceImageContentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ResourceImageContent
+   */
+  omit?: Prisma.ResourceImageContentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ResourceImageContentInclude<ExtArgs> | null
+  where?: Prisma.ResourceImageContentWhereInput
 }
 
 /**

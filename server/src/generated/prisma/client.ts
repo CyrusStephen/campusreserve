@@ -52,6 +52,11 @@ export type Department = Prisma.DepartmentModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model SignupVerification
+ * 
+ */
+export type SignupVerification = Prisma.SignupVerificationModel
+/**
  * Model CanteenItem
  * 
  */
@@ -81,6 +86,11 @@ export type Resource = Prisma.ResourceModel
  * 
  */
 export type ResourceImage = Prisma.ResourceImageModel
+/**
+ * Model ResourceImageContent
+ * 
+ */
+export type ResourceImageContent = Prisma.ResourceImageContentModel
 /**
  * Model Reservation
  * 

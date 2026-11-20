@@ -4,19 +4,7 @@
 
 CampusReserve uses an email outbox. Booking events are written to `EmailDelivery` in the same database transaction as the booking change. A background worker sends queued messages and retries failures with backoff.
 
-Configure these environment variables in `server/.env` when the college provides an SMTP account:
-
-- `SMTP_HOST`
-- `SMTP_PORT` (usually `587` for STARTTLS or `465` for implicit TLS)
-- `SMTP_SECURE=true` for implicit TLS; `false` for STARTTLS/plain SMTP
-- `SMTP_USER`
-- `SMTP_PASSWORD`
-- `MAIL_FROM`
-- `SUPPORT_EMAIL`
-- `SMTP_HELO_NAME`
-- `SMTP_REJECT_UNAUTHORIZED=true`
-
-If SMTP is not configured, the app continues to work locally and email delivery stays disabled. Do not commit real SMTP credentials.
+Set up a sender using the [account, photo and email update guide](CAMPUSRESERVE_ACCOUNT_PHOTO_EMAIL_UPDATE.md). CampusReserve supports SMTP over TLS and the Resend HTTPS API. With neither configured, booking and in-app notifications still work and email delivery stays queued.
 
 Booking submission, approval/rejection, occurrence decisions, reschedules and cancellations create email records. Email delivery is deliberately asynchronous so an SMTP outage does not make a successful booking transaction fail.
 

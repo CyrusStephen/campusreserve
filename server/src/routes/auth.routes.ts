@@ -9,6 +9,7 @@ import { requireAuth } from '../middleware/auth.js'
 import { hashPassword, verifyPassword } from '../utils/password.js'
 import { isAllowedClientOrigin } from '../utils/client-origin.js'
 import { inspectJpeg } from '../utils/resource-media.js'
+import { registrationRouter } from './registration.routes.js'
 import {
   ACCESS_TOKEN_TTL_SECONDS,
   REFRESH_TOKEN_TTL_MS,
@@ -186,6 +187,8 @@ authRouter.use((request, response, next) => {
   next()
 })
 
+authRouter.use(registrationRouter)
+
 authRouter.post('/login', loginLimiter, async (request, response) => {
   if (!request.is('application/json')) {
     response.status(415).json({
@@ -221,6 +224,11 @@ authRouter.post('/login', loginLimiter, async (request, response) => {
       user?.passwordHash ?? fallbackHash,
       input.data.password,
     )
+
+    if (user?.status === 'PENDING' && passwordMatches) {
+      response.status(403).json({ status: 'error', message: 'Your email is verified. Your account is awaiting administrator approval.' })
+      return
+    }
 
     if (!user || !passwordMatches || user.status !== 'ACTIVE') {
       invalidCredentials(response)

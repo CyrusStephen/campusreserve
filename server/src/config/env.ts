@@ -20,8 +20,9 @@ const environmentSchema = z.object({
     .default(5000),
 
   CLIENT_ORIGIN: z
-    .url()
+    .url({ protocol: /^https?$/ })
     .default('http://localhost:5173'),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   RESOURCE_UPLOAD_DIR: z.string().trim().min(1).optional(),
   REFRESH_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   SMTP_HOST: z.string().trim().min(1).optional(),
@@ -29,6 +30,7 @@ const environmentSchema = z.object({
   SMTP_SECURE: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
   SMTP_USER: z.string().trim().min(1).optional(),
   SMTP_PASSWORD: z.string().min(1).optional(),
+  RESEND_API_KEY: z.string().trim().min(1).optional(),
   MAIL_FROM: z.string().email().optional(),
   SUPPORT_EMAIL: z.string().email().optional(),
   SMTP_HELO_NAME: z.string().trim().min(1).default('campusreserve'),

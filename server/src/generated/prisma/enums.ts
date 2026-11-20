@@ -63,7 +63,8 @@ export type CanteenPaymentStatus = (typeof CanteenPaymentStatus)[keyof typeof Ca
 
 export const UserStatus = {
   ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE'
+  INACTIVE: 'INACTIVE',
+  PENDING: 'PENDING'
 } as const
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]

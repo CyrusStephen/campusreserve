@@ -100,6 +100,7 @@ export default function AppShell() {
       {area === 'canteen' && <>{auth.user?.role !== 'CANTEEN_STAFF' && <NavLink end to="/app/canteen"><Coffee size={19} />Order from canteen</NavLink>}{canteenStaff && <NavLink to="/app/canteen/manage"><Settings2 size={19} />Canteen console</NavLink>}</>}
       {area === 'events' && <NavLink end to="/app/events"><TicketCheck size={19} />Event access</NavLink>}
       {area === 'security' && <NavLink end to="/app/security"><ShieldCheck size={19} />Verify booking</NavLink>}
+      {area === 'spaces' && administrator && <NavLink to="/app/manage/accounts"><UserRound size={19} />Account approvals</NavLink>}
     </nav>
     <div className="cr-sidebar-foot" ref={settingsRef}>
       <div className="cr-account">

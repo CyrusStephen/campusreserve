@@ -53,12 +53,14 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Department: 'Department',
   User: 'User',
+  SignupVerification: 'SignupVerification',
   CanteenItem: 'CanteenItem',
   CanteenOrder: 'CanteenOrder',
   CanteenOrderItem: 'CanteenOrderItem',
   AuthSession: 'AuthSession',
   Resource: 'Resource',
   ResourceImage: 'ResourceImage',
+  ResourceImageContent: 'ResourceImageContent',
   Reservation: 'Reservation',
   ReservationOccurrence: 'ReservationOccurrence',
   WaitlistEntry: 'WaitlistEntry',
@@ -107,12 +109,24 @@ export const UserScalarFieldEnum = {
   role: 'role',
   status: 'status',
   departmentId: 'departmentId',
+  signupDepartment: 'signupDepartment',
+  emailVerifiedAt: 'emailVerifiedAt',
   lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SignupVerificationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  lastRequestedAt: 'lastRequestedAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type SignupVerificationScalarFieldEnum = (typeof SignupVerificationScalarFieldEnum)[keyof typeof SignupVerificationScalarFieldEnum]
 
 
 export const CanteenItemScalarFieldEnum = {
@@ -226,6 +240,14 @@ export const ResourceImageScalarFieldEnum = {
 export type ResourceImageScalarFieldEnum = (typeof ResourceImageScalarFieldEnum)[keyof typeof ResourceImageScalarFieldEnum]
 
 
+export const ResourceImageContentScalarFieldEnum = {
+  imageId: 'imageId',
+  bytes: 'bytes'
+} as const
+
+export type ResourceImageContentScalarFieldEnum = (typeof ResourceImageContentScalarFieldEnum)[keyof typeof ResourceImageContentScalarFieldEnum]
+
+
 export const ReservationScalarFieldEnum = {
   id: 'id',
   referenceCode: 'referenceCode',
@@ -305,7 +327,8 @@ export const EmailDeliveryScalarFieldEnum = {
   lockedAt: 'lockedAt',
   sentAt: 'sentAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  signupVerificationId: 'signupVerificationId'
 } as const
 
 export type EmailDeliveryScalarFieldEnum = (typeof EmailDeliveryScalarFieldEnum)[keyof typeof EmailDeliveryScalarFieldEnum]

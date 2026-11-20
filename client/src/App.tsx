@@ -5,6 +5,8 @@ import AppShell from './components/AppShell'
 import DashboardPage from './pages/DashboardPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import { SignupPage, VerifyEmailPage } from './pages/SignupPage'
+import AccountApprovalsPage from './pages/AccountApprovalsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ResourcesPage from './pages/ResourcesPage'
 import ResourceDetailPage from './pages/ResourceDetailPage'
@@ -40,6 +42,8 @@ function App() {
       <Route path="/" element={<HomeEntry />} />
       <Route path="/products" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="/access-denied" element={<ProtectedRoute><AccessDeniedPage /></ProtectedRoute>} />
       <Route
         path="/app"
@@ -64,6 +68,7 @@ function App() {
         <Route path="events" element={<EventAccessPage />} />
         <Route path="security" element={<SecurityVerificationPage />} />
         <Route path="manage/reports" element={<ReportsPage />} />
+        <Route path="manage/accounts" element={<AccountApprovalsPage />} />
         <Route path="manage/bookings" element={<BookingQueuePage />} />
         <Route path="manage/bookings/history" element={<ApprovalHistoryPage />} />
         <Route path="manage/calendar" element={<AdminCalendarPage />} />

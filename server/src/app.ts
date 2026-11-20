@@ -17,6 +17,7 @@ import { isAllowedClientOrigin } from './utils/client-origin.js'
 export const app = express()
 
 app.disable('x-powered-by')
+app.set('trust proxy', env.TRUST_PROXY_HOPS || false)
 
 app.use(
   pinoHttp({

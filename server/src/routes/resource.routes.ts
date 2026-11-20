@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto'
-import { mkdir, unlink, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Router, raw, type Request, type RequestHandler } from 'express'
@@ -212,30 +211,25 @@ resourceRouter.post('/:id/photos', ...adminWrite, raw({ type: 'image/jpeg', limi
   }
   await getResource(id, request.auth?.user.role)
   const filename = `${randomUUID()}.jpg`
-  const filePath = resolve(uploadDirectory, filename)
-  await mkdir(uploadDirectory, { recursive: true })
-  await writeFile(filePath, request.body, { flag: 'wx', mode: 0o600 })
-  let committed = false
-  try {
-    const resource = await prisma.$transaction(async (transaction) => {
-      await claimRevision(transaction, id, revision)
-      const photos = await transaction.resourceImage.findMany({ where: { resourceId: id }, select: { sortOrder: true } })
-      if (photos.length >= MAX_PHOTOS) throw new HttpError(400, `A resource can have up to ${MAX_PHOTOS} photos.`)
-      const created = await transaction.resourceImage.create({ data: {
+  const bytes = new Uint8Array(request.body)
+  const resource = await prisma.$transaction(async (transaction) => {
+    await claimRevision(transaction, id, revision)
+    const photos = await transaction.resourceImage.findMany({ where: { resourceId: id }, select: { sortOrder: true } })
+    if (photos.length >= MAX_PHOTOS) throw new HttpError(400, `A resource can have up to ${MAX_PHOTOS} photos.`)
+    const created = await transaction.resourceImage.create({
+      data: {
         resourceId: id,
         url: `/api/resource-images/${filename}`,
         altText,
         sortOrder: photos.reduce((highest, photo) => Math.max(highest, photo.sortOrder), -1) + 1,
-      } })
-      await audit(transaction, request, 'RESOURCE_PHOTO_ADDED', id, { imageId: created.id })
-      return transaction.resource.findUniqueOrThrow({ where: { id }, include: includeImages })
+        content: { create: { bytes } },
+      },
+      select: { id: true },
     })
-    committed = true
-    response.status(201).json({ status: 'ok', data: resource })
-  } finally {
-    // Only roll back the newly written file if its database write failed.
-    if (!committed) await unlink(filePath).catch(() => { request.log.warn('An unattached resource photo needs storage cleanup.') })
-  }
+    await audit(transaction, request, 'RESOURCE_PHOTO_ADDED', id, { imageId: created.id })
+    return transaction.resource.findUniqueOrThrow({ where: { id }, include: includeImages })
+  })
+  response.status(201).json({ status: 'ok', data: resource })
 })
 
 resourceRouter.patch('/:id/photos/:photoId', ...adminWrite, async (request, response) => {
@@ -268,11 +262,9 @@ resourceRouter.delete('/:id/photos/:photoId', ...adminWrite, async (request, res
     const photo = await transaction.resourceImage.findFirst({ where: { id: photoId, resourceId: id } })
     if (!photo) throw new HttpError(404, 'Photo not found.')
     await transaction.resourceImage.delete({ where: { id: photo.id } })
-    await audit(transaction, request, 'RESOURCE_PHOTO_REMOVED', id, { imageId: photo.id, retainedUrl: photo.url })
+    await audit(transaction, request, 'RESOURCE_PHOTO_REMOVED', id, { imageId: photo.id })
     return transaction.resource.findUniqueOrThrow({ where: { id }, include: includeImages })
   })
-  // Retain the bytes for recovery; the authenticated serving route immediately
-  // stops exposing a file when its ResourceImage record has been removed.
   response.json({ status: 'ok', data: resource })
 })
 
@@ -280,7 +272,7 @@ resourceImageRouter.get('/:filename', async (request, response, next) => {
   const filename = z.string().regex(photoFilenamePattern).parse(request.params.filename)
   const photo = await prisma.resourceImage.findFirst({
     where: { url: `/api/resource-images/${filename}` },
-    select: { resource: { select: { status: true, isDemo: true } } },
+    select: { id: true, resource: { select: { status: true, isDemo: true } } },
   })
   if (!photo || !canViewResource(request.auth?.user.role, photo.resource)) {
     throw new HttpError(404, 'Photo not found.')
@@ -288,6 +280,12 @@ resourceImageRouter.get('/:filename', async (request, response, next) => {
   response.setHeader('Content-Type', 'image/jpeg')
   response.setHeader('X-Content-Type-Options', 'nosniff')
   response.setHeader('Content-Disposition', 'inline')
+  const content = await prisma.resourceImageContent.findUnique({ where: { imageId: photo.id }, select: { bytes: true } })
+  if (content) {
+    response.send(Buffer.from(content.bytes))
+    return
+  }
+  // Photos from existing installations can still be served from their original directory.
   response.sendFile(filename, { root: uploadDirectory, dotfiles: 'deny', cacheControl: false, acceptRanges: false }, (error) => {
     if (error) next(error)
   })

@@ -1,4 +1,5 @@
 import type { Prisma } from '../generated/prisma/client.js'
+import { env } from '../config/env.js'
 import { enqueueEmail } from './email.js'
 
 interface BookingMailData {
@@ -47,8 +48,9 @@ async function queueBookingMail(
   intro: string,
 ): Promise<void> {
   const details = bookingDetails(data)
-  const text = `${intro}\n\n${details}\n\nCampusReserve`
-  const html = `<div style="font-family:Arial,sans-serif;line-height:1.55"><h2>${htmlText(subject)}</h2><p>${htmlText(intro)}</p><pre style="font-family:inherit;white-space:pre-wrap">${htmlText(details)}</pre><p>CampusReserve</p></div>`
+  const bookingsUrl = new URL('/app/bookings', env.CLIENT_ORIGIN).href
+  const text = `${intro}\n\n${details}\n\nView my bookings: ${bookingsUrl}\n\nCampusReserve`
+  const html = `<div style="font-family:Arial,sans-serif;line-height:1.55"><h2>${htmlText(subject)}</h2><p>${htmlText(intro)}</p><pre style="font-family:inherit;white-space:pre-wrap">${htmlText(details)}</pre><p><a href="${bookingsUrl}">View my bookings</a></p></div>`
   await enqueueEmail(transaction, { to: data.requesterEmail, subject, text, html })
 }
 

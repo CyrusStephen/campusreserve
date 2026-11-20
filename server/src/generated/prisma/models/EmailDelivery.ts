@@ -48,6 +48,7 @@ export type EmailDeliveryMinAggregateOutputType = {
   sentAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  signupVerificationId: string | null
 }
 
 export type EmailDeliveryMaxAggregateOutputType = {
@@ -64,6 +65,7 @@ export type EmailDeliveryMaxAggregateOutputType = {
   sentAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  signupVerificationId: string | null
 }
 
 export type EmailDeliveryCountAggregateOutputType = {
@@ -80,6 +82,7 @@ export type EmailDeliveryCountAggregateOutputType = {
   sentAt: number
   createdAt: number
   updatedAt: number
+  signupVerificationId: number
   _all: number
 }
 
@@ -106,6 +109,7 @@ export type EmailDeliveryMinAggregateInputType = {
   sentAt?: true
   createdAt?: true
   updatedAt?: true
+  signupVerificationId?: true
 }
 
 export type EmailDeliveryMaxAggregateInputType = {
@@ -122,6 +126,7 @@ export type EmailDeliveryMaxAggregateInputType = {
   sentAt?: true
   createdAt?: true
   updatedAt?: true
+  signupVerificationId?: true
 }
 
 export type EmailDeliveryCountAggregateInputType = {
@@ -138,6 +143,7 @@ export type EmailDeliveryCountAggregateInputType = {
   sentAt?: true
   createdAt?: true
   updatedAt?: true
+  signupVerificationId?: true
   _all?: true
 }
 
@@ -241,6 +247,7 @@ export type EmailDeliveryGroupByOutputType = {
   sentAt: Date | null
   createdAt: Date
   updatedAt: Date
+  signupVerificationId: string | null
   _count: EmailDeliveryCountAggregateOutputType | null
   _avg: EmailDeliveryAvgAggregateOutputType | null
   _sum: EmailDeliverySumAggregateOutputType | null
@@ -280,6 +287,8 @@ export type EmailDeliveryWhereInput = {
   sentAt?: Prisma.DateTimeNullableFilter<"EmailDelivery"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
+  signupVerificationId?: Prisma.UuidNullableFilter<"EmailDelivery"> | string | null
+  signupVerification?: Prisma.XOR<Prisma.SignupVerificationNullableScalarRelationFilter, Prisma.SignupVerificationWhereInput> | null
 }
 
 export type EmailDeliveryOrderByWithRelationInput = {
@@ -296,6 +305,8 @@ export type EmailDeliveryOrderByWithRelationInput = {
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  signupVerificationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  signupVerification?: Prisma.SignupVerificationOrderByWithRelationInput
 }
 
 export type EmailDeliveryWhereUniqueInput = Prisma.AtLeast<{
@@ -315,6 +326,8 @@ export type EmailDeliveryWhereUniqueInput = Prisma.AtLeast<{
   sentAt?: Prisma.DateTimeNullableFilter<"EmailDelivery"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
+  signupVerificationId?: Prisma.UuidNullableFilter<"EmailDelivery"> | string | null
+  signupVerification?: Prisma.XOR<Prisma.SignupVerificationNullableScalarRelationFilter, Prisma.SignupVerificationWhereInput> | null
 }, "id">
 
 export type EmailDeliveryOrderByWithAggregationInput = {
@@ -331,6 +344,7 @@ export type EmailDeliveryOrderByWithAggregationInput = {
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  signupVerificationId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EmailDeliveryCountOrderByAggregateInput
   _avg?: Prisma.EmailDeliveryAvgOrderByAggregateInput
   _max?: Prisma.EmailDeliveryMaxOrderByAggregateInput
@@ -355,6 +369,7 @@ export type EmailDeliveryScalarWhereWithAggregatesInput = {
   sentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EmailDelivery"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmailDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EmailDelivery"> | Date | string
+  signupVerificationId?: Prisma.UuidNullableWithAggregatesFilter<"EmailDelivery"> | string | null
 }
 
 export type EmailDeliveryCreateInput = {
@@ -371,6 +386,7 @@ export type EmailDeliveryCreateInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  signupVerification?: Prisma.SignupVerificationCreateNestedOneWithoutDeliveriesInput
 }
 
 export type EmailDeliveryUncheckedCreateInput = {
@@ -387,6 +403,7 @@ export type EmailDeliveryUncheckedCreateInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  signupVerificationId?: string | null
 }
 
 export type EmailDeliveryUpdateInput = {
@@ -403,6 +420,7 @@ export type EmailDeliveryUpdateInput = {
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  signupVerification?: Prisma.SignupVerificationUpdateOneWithoutDeliveriesNestedInput
 }
 
 export type EmailDeliveryUncheckedUpdateInput = {
@@ -419,6 +437,7 @@ export type EmailDeliveryUncheckedUpdateInput = {
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  signupVerificationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmailDeliveryCreateManyInput = {
@@ -435,6 +454,7 @@ export type EmailDeliveryCreateManyInput = {
   sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  signupVerificationId?: string | null
 }
 
 export type EmailDeliveryUpdateManyMutationInput = {
@@ -467,6 +487,17 @@ export type EmailDeliveryUncheckedUpdateManyInput = {
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  signupVerificationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EmailDeliveryListRelationFilter = {
+  every?: Prisma.EmailDeliveryWhereInput
+  some?: Prisma.EmailDeliveryWhereInput
+  none?: Prisma.EmailDeliveryWhereInput
+}
+
+export type EmailDeliveryOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type EmailDeliveryCountOrderByAggregateInput = {
@@ -483,6 +514,7 @@ export type EmailDeliveryCountOrderByAggregateInput = {
   sentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  signupVerificationId?: Prisma.SortOrder
 }
 
 export type EmailDeliveryAvgOrderByAggregateInput = {
@@ -503,6 +535,7 @@ export type EmailDeliveryMaxOrderByAggregateInput = {
   sentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  signupVerificationId?: Prisma.SortOrder
 }
 
 export type EmailDeliveryMinOrderByAggregateInput = {
@@ -519,14 +552,199 @@ export type EmailDeliveryMinOrderByAggregateInput = {
   sentAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  signupVerificationId?: Prisma.SortOrder
 }
 
 export type EmailDeliverySumOrderByAggregateInput = {
   attempts?: Prisma.SortOrder
 }
 
+export type EmailDeliveryCreateNestedManyWithoutSignupVerificationInput = {
+  create?: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput> | Prisma.EmailDeliveryCreateWithoutSignupVerificationInput[] | Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput[]
+  connectOrCreate?: Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput | Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput[]
+  createMany?: Prisma.EmailDeliveryCreateManySignupVerificationInputEnvelope
+  connect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+}
+
+export type EmailDeliveryUncheckedCreateNestedManyWithoutSignupVerificationInput = {
+  create?: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput> | Prisma.EmailDeliveryCreateWithoutSignupVerificationInput[] | Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput[]
+  connectOrCreate?: Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput | Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput[]
+  createMany?: Prisma.EmailDeliveryCreateManySignupVerificationInputEnvelope
+  connect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+}
+
+export type EmailDeliveryUpdateManyWithoutSignupVerificationNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput> | Prisma.EmailDeliveryCreateWithoutSignupVerificationInput[] | Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput[]
+  connectOrCreate?: Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput | Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput[]
+  upsert?: Prisma.EmailDeliveryUpsertWithWhereUniqueWithoutSignupVerificationInput | Prisma.EmailDeliveryUpsertWithWhereUniqueWithoutSignupVerificationInput[]
+  createMany?: Prisma.EmailDeliveryCreateManySignupVerificationInputEnvelope
+  set?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  disconnect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  delete?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  connect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  update?: Prisma.EmailDeliveryUpdateWithWhereUniqueWithoutSignupVerificationInput | Prisma.EmailDeliveryUpdateWithWhereUniqueWithoutSignupVerificationInput[]
+  updateMany?: Prisma.EmailDeliveryUpdateManyWithWhereWithoutSignupVerificationInput | Prisma.EmailDeliveryUpdateManyWithWhereWithoutSignupVerificationInput[]
+  deleteMany?: Prisma.EmailDeliveryScalarWhereInput | Prisma.EmailDeliveryScalarWhereInput[]
+}
+
+export type EmailDeliveryUncheckedUpdateManyWithoutSignupVerificationNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput> | Prisma.EmailDeliveryCreateWithoutSignupVerificationInput[] | Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput[]
+  connectOrCreate?: Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput | Prisma.EmailDeliveryCreateOrConnectWithoutSignupVerificationInput[]
+  upsert?: Prisma.EmailDeliveryUpsertWithWhereUniqueWithoutSignupVerificationInput | Prisma.EmailDeliveryUpsertWithWhereUniqueWithoutSignupVerificationInput[]
+  createMany?: Prisma.EmailDeliveryCreateManySignupVerificationInputEnvelope
+  set?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  disconnect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  delete?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  connect?: Prisma.EmailDeliveryWhereUniqueInput | Prisma.EmailDeliveryWhereUniqueInput[]
+  update?: Prisma.EmailDeliveryUpdateWithWhereUniqueWithoutSignupVerificationInput | Prisma.EmailDeliveryUpdateWithWhereUniqueWithoutSignupVerificationInput[]
+  updateMany?: Prisma.EmailDeliveryUpdateManyWithWhereWithoutSignupVerificationInput | Prisma.EmailDeliveryUpdateManyWithWhereWithoutSignupVerificationInput[]
+  deleteMany?: Prisma.EmailDeliveryScalarWhereInput | Prisma.EmailDeliveryScalarWhereInput[]
+}
+
 export type EnumEmailDeliveryStatusFieldUpdateOperationsInput = {
   set?: $Enums.EmailDeliveryStatus
+}
+
+export type EmailDeliveryCreateWithoutSignupVerificationInput = {
+  id?: string
+  to: string
+  subject: string
+  textBody: string
+  htmlBody?: string | null
+  status?: $Enums.EmailDeliveryStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lockedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EmailDeliveryUncheckedCreateWithoutSignupVerificationInput = {
+  id?: string
+  to: string
+  subject: string
+  textBody: string
+  htmlBody?: string | null
+  status?: $Enums.EmailDeliveryStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lockedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EmailDeliveryCreateOrConnectWithoutSignupVerificationInput = {
+  where: Prisma.EmailDeliveryWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput>
+}
+
+export type EmailDeliveryCreateManySignupVerificationInputEnvelope = {
+  data: Prisma.EmailDeliveryCreateManySignupVerificationInput | Prisma.EmailDeliveryCreateManySignupVerificationInput[]
+  skipDuplicates?: boolean
+}
+
+export type EmailDeliveryUpsertWithWhereUniqueWithoutSignupVerificationInput = {
+  where: Prisma.EmailDeliveryWhereUniqueInput
+  update: Prisma.XOR<Prisma.EmailDeliveryUpdateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedUpdateWithoutSignupVerificationInput>
+  create: Prisma.XOR<Prisma.EmailDeliveryCreateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedCreateWithoutSignupVerificationInput>
+}
+
+export type EmailDeliveryUpdateWithWhereUniqueWithoutSignupVerificationInput = {
+  where: Prisma.EmailDeliveryWhereUniqueInput
+  data: Prisma.XOR<Prisma.EmailDeliveryUpdateWithoutSignupVerificationInput, Prisma.EmailDeliveryUncheckedUpdateWithoutSignupVerificationInput>
+}
+
+export type EmailDeliveryUpdateManyWithWhereWithoutSignupVerificationInput = {
+  where: Prisma.EmailDeliveryScalarWhereInput
+  data: Prisma.XOR<Prisma.EmailDeliveryUpdateManyMutationInput, Prisma.EmailDeliveryUncheckedUpdateManyWithoutSignupVerificationInput>
+}
+
+export type EmailDeliveryScalarWhereInput = {
+  AND?: Prisma.EmailDeliveryScalarWhereInput | Prisma.EmailDeliveryScalarWhereInput[]
+  OR?: Prisma.EmailDeliveryScalarWhereInput[]
+  NOT?: Prisma.EmailDeliveryScalarWhereInput | Prisma.EmailDeliveryScalarWhereInput[]
+  id?: Prisma.UuidFilter<"EmailDelivery"> | string
+  to?: Prisma.StringFilter<"EmailDelivery"> | string
+  subject?: Prisma.StringFilter<"EmailDelivery"> | string
+  textBody?: Prisma.StringFilter<"EmailDelivery"> | string
+  htmlBody?: Prisma.StringNullableFilter<"EmailDelivery"> | string | null
+  status?: Prisma.EnumEmailDeliveryStatusFilter<"EmailDelivery"> | $Enums.EmailDeliveryStatus
+  attempts?: Prisma.IntFilter<"EmailDelivery"> | number
+  lastError?: Prisma.StringNullableFilter<"EmailDelivery"> | string | null
+  nextAttemptAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
+  lockedAt?: Prisma.DateTimeNullableFilter<"EmailDelivery"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"EmailDelivery"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"EmailDelivery"> | Date | string
+  signupVerificationId?: Prisma.UuidNullableFilter<"EmailDelivery"> | string | null
+}
+
+export type EmailDeliveryCreateManySignupVerificationInput = {
+  id?: string
+  to: string
+  subject: string
+  textBody: string
+  htmlBody?: string | null
+  status?: $Enums.EmailDeliveryStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lockedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EmailDeliveryUpdateWithoutSignupVerificationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  textBody?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumEmailDeliveryStatusFieldUpdateOperationsInput | $Enums.EmailDeliveryStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EmailDeliveryUncheckedUpdateWithoutSignupVerificationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  textBody?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumEmailDeliveryStatusFieldUpdateOperationsInput | $Enums.EmailDeliveryStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EmailDeliveryUncheckedUpdateManyWithoutSignupVerificationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  to?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  textBody?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumEmailDeliveryStatusFieldUpdateOperationsInput | $Enums.EmailDeliveryStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -545,6 +763,8 @@ export type EmailDeliverySelect<ExtArgs extends runtime.Types.Extensions.Interna
   sentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  signupVerificationId?: boolean
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
 }, ExtArgs["result"]["emailDelivery"]>
 
 export type EmailDeliverySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -561,6 +781,8 @@ export type EmailDeliverySelectCreateManyAndReturn<ExtArgs extends runtime.Types
   sentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  signupVerificationId?: boolean
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
 }, ExtArgs["result"]["emailDelivery"]>
 
 export type EmailDeliverySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -577,6 +799,8 @@ export type EmailDeliverySelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   sentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  signupVerificationId?: boolean
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
 }, ExtArgs["result"]["emailDelivery"]>
 
 export type EmailDeliverySelectScalar = {
@@ -593,13 +817,25 @@ export type EmailDeliverySelectScalar = {
   sentAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  signupVerificationId?: boolean
 }
 
-export type EmailDeliveryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "to" | "subject" | "textBody" | "htmlBody" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lockedAt" | "sentAt" | "createdAt" | "updatedAt", ExtArgs["result"]["emailDelivery"]>
+export type EmailDeliveryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "to" | "subject" | "textBody" | "htmlBody" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lockedAt" | "sentAt" | "createdAt" | "updatedAt" | "signupVerificationId", ExtArgs["result"]["emailDelivery"]>
+export type EmailDeliveryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
+}
+export type EmailDeliveryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
+}
+export type EmailDeliveryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  signupVerification?: boolean | Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>
+}
 
 export type $EmailDeliveryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EmailDelivery"
-  objects: {}
+  objects: {
+    signupVerification: Prisma.$SignupVerificationPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     to: string
@@ -614,6 +850,7 @@ export type $EmailDeliveryPayload<ExtArgs extends runtime.Types.Extensions.Inter
     sentAt: Date | null
     createdAt: Date
     updatedAt: Date
+    signupVerificationId: string | null
   }, ExtArgs["result"]["emailDelivery"]>
   composites: {}
 }
@@ -1008,6 +1245,7 @@ readonly fields: EmailDeliveryFieldRefs;
  */
 export interface Prisma__EmailDeliveryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  signupVerification<T extends Prisma.EmailDelivery$signupVerificationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailDelivery$signupVerificationArgs<ExtArgs>>): Prisma.Prisma__SignupVerificationClient<runtime.Types.Result.GetResult<Prisma.$SignupVerificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1050,6 +1288,7 @@ export interface EmailDeliveryFieldRefs {
   readonly sentAt: Prisma.FieldRef<"EmailDelivery", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"EmailDelivery", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EmailDelivery", 'DateTime'>
+  readonly signupVerificationId: Prisma.FieldRef<"EmailDelivery", 'String'>
 }
     
 
@@ -1066,6 +1305,10 @@ export type EmailDeliveryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
   /**
    * Filter, which EmailDelivery to fetch.
    */
@@ -1085,6 +1328,10 @@ export type EmailDeliveryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
+  /**
    * Filter, which EmailDelivery to fetch.
    */
   where: Prisma.EmailDeliveryWhereUniqueInput
@@ -1102,6 +1349,10 @@ export type EmailDeliveryFindFirstArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
   /**
    * Filter, which EmailDelivery to fetch.
    */
@@ -1151,6 +1402,10 @@ export type EmailDeliveryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
+  /**
    * Filter, which EmailDelivery to fetch.
    */
   where?: Prisma.EmailDeliveryWhereInput
@@ -1198,6 +1453,10 @@ export type EmailDeliveryFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
   /**
    * Filter, which EmailDeliveries to fetch.
    */
@@ -1247,6 +1506,10 @@ export type EmailDeliveryCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
+  /**
    * The data needed to create a EmailDelivery.
    */
   data: Prisma.XOR<Prisma.EmailDeliveryCreateInput, Prisma.EmailDeliveryUncheckedCreateInput>
@@ -1280,6 +1543,10 @@ export type EmailDeliveryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.EmailDeliveryCreateManyInput | Prisma.EmailDeliveryCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1294,6 +1561,10 @@ export type EmailDeliveryUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
   /**
    * The data needed to update a EmailDelivery.
    */
@@ -1346,6 +1617,10 @@ export type EmailDeliveryUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many EmailDeliveries to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1360,6 +1635,10 @@ export type EmailDeliveryUpsertArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
   /**
    * The filter to search for the EmailDelivery to update in case it exists.
    */
@@ -1387,6 +1666,10 @@ export type EmailDeliveryDeleteArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
+  /**
    * Filter which EmailDelivery to delete.
    */
   where: Prisma.EmailDeliveryWhereUniqueInput
@@ -1407,6 +1690,25 @@ export type EmailDeliveryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * EmailDelivery.signupVerification
+ */
+export type EmailDelivery$signupVerificationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SignupVerification
+   */
+  select?: Prisma.SignupVerificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SignupVerification
+   */
+  omit?: Prisma.SignupVerificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SignupVerificationInclude<ExtArgs> | null
+  where?: Prisma.SignupVerificationWhereInput
+}
+
+/**
  * EmailDelivery without action
  */
 export type EmailDeliveryDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1418,4 +1720,8 @@ export type EmailDeliveryDefaultArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the EmailDelivery
    */
   omit?: Prisma.EmailDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailDeliveryInclude<ExtArgs> | null
 }

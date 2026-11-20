@@ -2,6 +2,7 @@ import { Star, Trash2, Upload } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { preparePhoto, removePhoto, updatePhoto, uploadPhoto } from './api'
 import ResourcePhoto from './ResourcePhoto'
+import { resourcePhotos } from './college-photos'
 import type { Resource, ResourceImage } from './types'
 
 function PhotoEditor({ photo, cover, disabled, save, remove }: {
@@ -28,9 +29,11 @@ export default function PhotoManager({ resource, disabled, onChange, onBusyChang
     finally { setBusy(false); onBusyChange(false) }
   }
   const locked = busy || disabled
-  return <section className="cr-panel" aria-busy={busy}>
-    <h2>Photos <span className="cr-muted">{resource.images.length}/8</span></h2>
-    <p className="cr-help">Choose JPEG, PNG or WebP files up to 20 MB. Photos are resized and converted to JPEG before upload. The first photo is the cover.</p>
+  const cover = resourcePhotos(resource)[0]
+  return <section id="resource-photos" className="cr-panel scroll-mt-24" tabIndex={-1} aria-labelledby="resource-photos-title" aria-busy={busy}>
+    <h2 id="resource-photos-title">Venue photos</h2>
+    <ResourcePhoto photo={cover} className="rounded-xl" />
+    <p className="cr-help">{resource.images.length} of 8 uploads used. The first upload becomes the cover. Choose a JPEG, PNG or WebP file up to 20 MB.</p>
     {error && <div className="cr-alert cr-alert-error" role="alert"><p>{error}</p><button className="cr-button cr-button-small" type="button" disabled={locked} onClick={onReload}>Reload resource</button></div>}
     {message && <p role="status" className="cr-success">{message}</p>}
     <fieldset className="cr-upload" disabled={locked || resource.images.length >= 8}>

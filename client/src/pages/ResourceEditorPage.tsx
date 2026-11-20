@@ -1,6 +1,6 @@
 import { ArrowLeft, Save } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { getResource, saveResource } from '../resources/api'
 import PhotoManager from '../resources/PhotoManager'
@@ -18,6 +18,7 @@ export default function ResourceEditorPage() {
   const { user } = useAuth()
   const administrator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN'
   const navigate = useNavigate()
+  const { hash } = useLocation()
   const [resource, setResource] = useState<Resource | null>(null)
   const [input, setInput] = useState<ResourceInput>({ ...emptyResource })
   const [features, setFeatures] = useState('')
@@ -46,6 +47,13 @@ export default function ResourceEditorPage() {
     }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
   }, [administrator, id, retry])
+
+  useEffect(() => {
+    if (loading || hash !== '#resource-photos') return
+    const photos = document.getElementById('resource-photos')
+    photos?.scrollIntoView({ block: 'start' })
+    photos?.focus({ preventScroll: true })
+  }, [hash, loading])
 
   useEffect(() => {
     if (!dirty) return

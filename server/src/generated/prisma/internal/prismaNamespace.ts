@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.10.0
- * Query Engine version: 0edf323efd1d98336f3f0a68684b56f689b900d3
+ * Prisma Client JS version: 7.10.1
+ * Query Engine version: d1b3f377ca835d73fd50954a5e22128b9ebdd6b8
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.10.0",
-  engine: "0edf323efd1d98336f3f0a68684b56f689b900d3"
+  client: "7.10.1",
+  engine: "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
 }
 
 /**
@@ -399,12 +399,14 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Department: 'Department',
   User: 'User',
+  SignupVerification: 'SignupVerification',
   CanteenItem: 'CanteenItem',
   CanteenOrder: 'CanteenOrder',
   CanteenOrderItem: 'CanteenOrderItem',
   AuthSession: 'AuthSession',
   Resource: 'Resource',
   ResourceImage: 'ResourceImage',
+  ResourceImageContent: 'ResourceImageContent',
   Reservation: 'Reservation',
   ReservationOccurrence: 'ReservationOccurrence',
   WaitlistEntry: 'WaitlistEntry',
@@ -427,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "department" | "user" | "canteenItem" | "canteenOrder" | "canteenOrderItem" | "authSession" | "resource" | "resourceImage" | "reservation" | "reservationOccurrence" | "waitlistEntry" | "emailDelivery" | "resourceBlock" | "auditLog" | "notification"
+    modelProps: "department" | "user" | "signupVerification" | "canteenItem" | "canteenOrder" | "canteenOrderItem" | "authSession" | "resource" | "resourceImage" | "resourceImageContent" | "reservation" | "reservationOccurrence" | "waitlistEntry" | "emailDelivery" | "resourceBlock" | "auditLog" | "notification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -576,6 +578,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    SignupVerification: {
+      payload: Prisma.$SignupVerificationPayload<ExtArgs>
+      fields: Prisma.SignupVerificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SignupVerificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SignupVerificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        findFirst: {
+          args: Prisma.SignupVerificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SignupVerificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        findMany: {
+          args: Prisma.SignupVerificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+        }
+        create: {
+          args: Prisma.SignupVerificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        createMany: {
+          args: Prisma.SignupVerificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SignupVerificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+        }
+        delete: {
+          args: Prisma.SignupVerificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        update: {
+          args: Prisma.SignupVerificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SignupVerificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SignupVerificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SignupVerificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SignupVerificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SignupVerificationPayload>
+        }
+        aggregate: {
+          args: Prisma.SignupVerificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSignupVerification>
+        }
+        groupBy: {
+          args: Prisma.SignupVerificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SignupVerificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SignupVerificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SignupVerificationCountAggregateOutputType> | number
         }
       }
     }
@@ -1020,6 +1096,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ResourceImageCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ResourceImageCountAggregateOutputType> | number
+        }
+      }
+    }
+    ResourceImageContent: {
+      payload: Prisma.$ResourceImageContentPayload<ExtArgs>
+      fields: Prisma.ResourceImageContentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ResourceImageContentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ResourceImageContentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        findFirst: {
+          args: Prisma.ResourceImageContentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ResourceImageContentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        findMany: {
+          args: Prisma.ResourceImageContentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>[]
+        }
+        create: {
+          args: Prisma.ResourceImageContentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        createMany: {
+          args: Prisma.ResourceImageContentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ResourceImageContentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>[]
+        }
+        delete: {
+          args: Prisma.ResourceImageContentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        update: {
+          args: Prisma.ResourceImageContentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ResourceImageContentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ResourceImageContentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ResourceImageContentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ResourceImageContentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResourceImageContentPayload>
+        }
+        aggregate: {
+          args: Prisma.ResourceImageContentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateResourceImageContent>
+        }
+        groupBy: {
+          args: Prisma.ResourceImageContentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResourceImageContentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ResourceImageContentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResourceImageContentCountAggregateOutputType> | number
         }
       }
     }
@@ -1603,12 +1753,24 @@ export const UserScalarFieldEnum = {
   role: 'role',
   status: 'status',
   departmentId: 'departmentId',
+  signupDepartment: 'signupDepartment',
+  emailVerifiedAt: 'emailVerifiedAt',
   lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SignupVerificationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  lastRequestedAt: 'lastRequestedAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type SignupVerificationScalarFieldEnum = (typeof SignupVerificationScalarFieldEnum)[keyof typeof SignupVerificationScalarFieldEnum]
 
 
 export const CanteenItemScalarFieldEnum = {
@@ -1722,6 +1884,14 @@ export const ResourceImageScalarFieldEnum = {
 export type ResourceImageScalarFieldEnum = (typeof ResourceImageScalarFieldEnum)[keyof typeof ResourceImageScalarFieldEnum]
 
 
+export const ResourceImageContentScalarFieldEnum = {
+  imageId: 'imageId',
+  bytes: 'bytes'
+} as const
+
+export type ResourceImageContentScalarFieldEnum = (typeof ResourceImageContentScalarFieldEnum)[keyof typeof ResourceImageContentScalarFieldEnum]
+
+
 export const ReservationScalarFieldEnum = {
   id: 'id',
   referenceCode: 'referenceCode',
@@ -1801,7 +1971,8 @@ export const EmailDeliveryScalarFieldEnum = {
   lockedAt: 'lockedAt',
   sentAt: 'sentAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  signupVerificationId: 'signupVerificationId'
 } as const
 
 export type EmailDeliveryScalarFieldEnum = (typeof EmailDeliveryScalarFieldEnum)[keyof typeof EmailDeliveryScalarFieldEnum]
@@ -2060,6 +2231,20 @@ export type ListEnumResourceStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -2309,12 +2494,14 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   department?: Prisma.DepartmentOmit
   user?: Prisma.UserOmit
+  signupVerification?: Prisma.SignupVerificationOmit
   canteenItem?: Prisma.CanteenItemOmit
   canteenOrder?: Prisma.CanteenOrderOmit
   canteenOrderItem?: Prisma.CanteenOrderItemOmit
   authSession?: Prisma.AuthSessionOmit
   resource?: Prisma.ResourceOmit
   resourceImage?: Prisma.ResourceImageOmit
+  resourceImageContent?: Prisma.ResourceImageContentOmit
   reservation?: Prisma.ReservationOmit
   reservationOccurrence?: Prisma.ReservationOccurrenceOmit
   waitlistEntry?: Prisma.WaitlistEntryOmit

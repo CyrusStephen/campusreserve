@@ -18,7 +18,8 @@ function LoginPage() {
   const service = new URLSearchParams(location.search).get('service')
   const serviceLabel = service === 'canteen' ? 'Canteen Orders' : service === 'events' ? 'Event Access' : service === 'security' ? 'Security Desk' : 'Space Bookings'
 
-  const requestedPath = (location.state as { from?: unknown } | null)?.from
+  const state = location.state as { from?: unknown; registrationComplete?: boolean } | null
+  const requestedPath = state?.from
   if (auth.status === 'authenticated') {
     if (!service && !requestedPath && auth.user) return <Navigate to={lastWorkspace(auth.user)} replace />
     if (auth.user) return <Navigate to={loginDestination(auth.user, service, requestedPath)} replace />
@@ -66,6 +67,11 @@ function LoginPage() {
           <p className="mt-2 text-neutral-600 dark:text-neutral-300">
             Sign in using your authorised college account.
           </p>
+          {state?.registrationComplete && (
+            <p role="status" className="mt-5 rounded-xl border border-emerald-700 bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100">
+              Email verified. Your account is awaiting administrator approval. You'll receive an email when it is reviewed.
+            </p>
+          )}
 
           {(formError ?? auth.error) && (
             <p
@@ -113,6 +119,7 @@ function LoginPage() {
               {submitting ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
+          <p className="mt-5 text-sm">New to CampusReserve? <Link to="/signup" className="font-semibold text-blue-700 underline underline-offset-4 dark:text-blue-300">Create an account</Link></p>
         </div>
       </section>
     </main>

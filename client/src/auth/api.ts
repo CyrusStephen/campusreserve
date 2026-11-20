@@ -206,6 +206,20 @@ export async function logoutRequest(): Promise<void> {
   })
 }
 
+export async function requestSignup(email: string): Promise<void> {
+  const response = await sendRequest('/auth/signup', {
+    method: 'POST', body: JSON.stringify({ email }), signal: AbortSignal.timeout(65_000),
+  }, null)
+  await parseResponse(response)
+}
+
+export async function verifySignup(input: { token: string; name: string; department: string; password: string }): Promise<void> {
+  const response = await sendRequest('/auth/signup/verify', {
+    method: 'POST', body: JSON.stringify(input), signal: AbortSignal.timeout(65_000),
+  }, null)
+  await parseResponse(response)
+}
+
 async function authorizedResponse(
   path: string,
   init: RequestInit = {},
